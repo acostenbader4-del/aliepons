@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gacha Collection</title>
+
+<style>
+  body {
+    background: linear-gradient(180deg, #1a1a2e, #16213e);
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 40px;
+  }
+
+  #machine {
+    font-size: 80px;
+    margin: 20px;
+  }
+
+  .shake {
+    animation: shake 0.5s infinite;
+  }
+
+  @keyframes shake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(-5deg); }
+    75% { transform: rotate(5deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    background: #ff69b4;
+    color: white;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+  }
+
+  #resultText {
+    font-size: 32px;
+    margin: 20px;
+    min-height: 40px;
+  }
+
+  #prizeBox iframe,
+  #prizeBox img {
+    width: 720px;
+    height: 405px;
+    margin-top: 20px;
+    border-radius: 18px;
+    border: none;
+    background: black;
+  }
+
+  #progressBar {
+    width: 80%;
+    height: 20px;
+    background: #333;
+    border-radius: 10px;
+    margin: 10px auto;
+    overflow: hidden;
+  }
+
+  #progressFill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ff69b4, #ffd1dc);
+    transition: width 0.4s ease;
+  }
+
+  #progressText {
+    margin-bottom: 6px;
+    font-size: 18px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    max-width: 1200px;
+    margin: 20px auto;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+
+  li {
+    cursor: pointer;
+    opacity: 0.85;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.2s;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  li:hover {
+    opacity: 1;
+    background: rgba(255, 105, 180, 0.2);
+    transform: scale(1.05);
+  }
+</style>
+</head>
+
+<body>
+
+<h1>🎀 Gacha Collection</h1>
+
+<div id="machine">🎁</div>
+<button id="rollBtn">ROLL</button>
+
+<div id="resultText"></div>
+
+<div id="progressText"></div>
+<div id="progressBar">
+  <div id="progressFill"></div>
+</div>
+
+<div id="prizeBox"></div>
+
+<h2>Your Collection</h2>
+<ul id="collectionList"></ul>
+
+<script>
+/* =========================
+   ADD YOUR PRIZES HERE
+   ========================= */
+
+const prizes = [
+  // VIDEOS
+  {
+  type: "video",
+  id: "vid01",
+  name: "M&Ms Christmas Commercial: THEY DO EXIST!",
+  src: "https://www.youtube.com/embed/iE8CJwXSPRs"
+},
+{
+  type: "video",
+  id: "vid02",
+  name: "zendaya is meechee",
+  src: "https://www.youtube.com/embed/Xx5YqFKjTCY"
+},
+{
+  type: "video",
+  id: "vid03",
+  name: "Peanut Butter Jelly Time with Lyrics!!!",
+  src: "https://www.youtube.com/embed/eRBOgtp0Hac"
+},
+{
+  type: "video",
+  id: "vid04",
+  name: "Roman And Logan - Rap Battle",
+  src: "https://www.youtube.com/embed/lg7wTrLnk64"
+},
+{
+  type: "video",
+  id: "vid05",
+  name: "This Day Aria | FundyWasTaken (? Animatic",
+  src: "https://www.youtube.com/embed/ho2f6Szgmec"
+},
+{
+  type: "video",
+  id: "vid06",
+  name: "DreamSmp Rhapsody || DREAM SMP ANIMATIC ||",
+  src: "https://www.youtube.com/embed/YihXAWuG0hA"
+},
+{
+  type: "video",
+  id: "vid07",
+  name: "Gimme that Filet-O-Fish",
+  src: "https://www.youtube.com/embed/csrPT9ClVUc"
+},
+{
+  type: "video",
+  id: "vid08",
+  name: "Ferb - Backyard Beach (From \"Phineas and Ferb\"/Sing-Along)",
+  src: "https://www.youtube.com/embed/z62uOoYP1TE"
+},
+{
+  type: "video",
+  id: "vid09",
+  name: "Aaron Burr, Sir || Hamilton Animatic",
+  src: "https://www.youtube.com/embed/7Z6U9WaZXkY"
+},
+{
+  type: "video",
+  id: "vid10",
+  name: "Dramatic fart sound effect 😂",
+  src: "https://www.youtube.com/embed/ilfTfC0FQcc"
+},
+{
+  type: "video",
+  id: "vid11",
+  name: "MLP FIM Season 1 Episode 1 - Friendship is Magic (Part 1)",
+  src: "https://www.youtube.com/embed/B6oUohZnKIc"
+},
+{
+  type: "video",
+  id: "vid12",
+  name: "31 Clothing Hacks Everyone NEEDS To Try || Fashion Tricks Everyone Must Know!",
+  src: "https://www.youtube.com/embed/ASGRB47_pxo"
+},
+{
+  type: "video",
+  id: "vid13",
+  name: "Game Theory: FNAF 6, No More Secrets",
+  src: "https://www.youtube.com/embed/s_dp2mBrqr0"
+},
+{
+  type: "video",
+  id: "vid14",
+  name: "Pigeon Conga 2 !",
+  src: "https://www.youtube.com/embed/Ut-fJCc0zS4"
+},
+{
+  type: "video",
+  id: "vid15",
+  name: "ＹＯＵ ＴＯＯＫ ＴＨＥ P E E P O",
+  src: "https://www.youtube.com/embed/jHb-kLa4ifo"
+},
+{
+  type: "video",
+  id: "vid16",
+  name: "Nightcore - Angel With A Shotgun",
+  src: "https://www.youtube.com/embed/cvaIgq5j2Q8"
+},
+{
+  type: "video",
+  id: "vid17",
+  name: "The Ice Cream Is Revealed As Ninja | The Masked Singer",
+  src: "https://www.youtube.com/embed/_dioP4Vn8E4"
+},
+{
+  type: "video",
+  id: "vid18",
+  name: "Minecraft: Parkour Racing - Gold & Diamond!",
+  src: "https://www.youtube.com/embed/NrbqhrLOwNA"
+},
+{
+  type: "video",
+  id: "vid19",
+  name: "Magic's Biggest Secrets Finally Revealed",
+  src: "https://www.youtube.com/embed/XDq08lk5GnQ"
+},
+{
+  type: "video",
+  id: "vid20",
+  name: "Walt Disney World Rides - 2022 POVs [4K POV]",
+  src: "https://www.youtube.com/embed/NNqRKx63kFI"
+},
+{
+  type: "video",
+  id: "vid21",
+  name: "roman sanders is amazing",
+  src: "https://www.youtube.com/embed/LjLP4KjFegY"
+},
+{
+  type: "video",
+  id: "vid22",
+  name: "Panic! At The Disco: Victorious [OFFICIAL VIDEO]",
+  src: "https://www.youtube.com/embed/AUChk0lxF44"
+},
+{
+  type: "video",
+  id: "vid23",
+  name: "J.G. Wentworth Commercial - Viking Opera",
+  src: "https://www.youtube.com/embed/pdPM6j1Q4sg"
+},
+{
+  type: "video",
+  id: "vid24",
+  name: "Bass Boosted Taco Bell Bell",
+  src: "https://www.youtube.com/embed/Wzkzric0c8Y"
+},
+{
+  type: "video",
+  id: "vid25",
+  name: "Coffee Mate Super Bowl 59 commercial",
+  src: "https://www.youtube.com/embed/u6-KwCtE1ko"
+},
+{
+  type: "video",
+  id: "vid26",
+  name: "10 Hours of Paint Drying",
+  src: "https://www.youtube.com/embed/PLOPygVcaVE"
+},
+{
+  type: "video",
+  id: "vid27",
+  name: "Fushigi Ball Commercial",
+  src: "https://www.youtube.com/embed/myIR__htBgc"
+},
+{
+  type: "video",
+  id: "vid28",
+  name: "Zoo Pals Commercial",
+  src: "https://www.youtube.com/embed/7OxIlXPY2Ps"
+},
+{
+  type: "video",
+  id: "vid29",
+  name: "【Undertale】Stronger Than You Response (ver. Frisk)",
+  src: "https://www.youtube.com/embed/OQ3z6oxNheo"
+},
+{
+  type: "video",
+  id: "vid30",
+  name: "Loser Like Me - Nightcore - Lyrics!!!",
+  src: "https://www.youtube.com/embed/nU_qTgKAHeY"
+},
+{
+  type: "video",
+  id: "vid31",
+  name: "PPG Servant of evil - NUS (English)",
+  src: "https://www.youtube.com/embed/oWZ6keZb174"
+},
+{
+  type: "video",
+  id: "vid32",
+  name: "Powerpunk girls and Rowdyrightboys ~ Calling all the monsters",
+  src: "https://www.youtube.com/embed/O4cd_Wo0-u8"
+},
+{
+  type: "video",
+  id: "vid33",
+  name: "That was a close call. They have a baby mustard.",
+  src: "https://www.youtube.com/embed/x4YA-74yhZo"
+},
+{
+  type: "video",
+  id: "vid34",
+  name: "Super Bowl 50 - Mountain Dew: Puppy Monkey Baby",
+  src: "https://www.youtube.com/embed/nQcfK9EKfL4"
+},
+{
+  type: "video",
+  id: "vid35",
+  name: "Harry Potter Puppet Pals",
+  src: "https://www.youtube.com/embed/F-I5GA2Jzyo"
+},
+{
+  type: "video",
+  id: "vid36",
+  name: "Disney Princess Royal Horse Show Full Playthrough",
+  src: "https://www.youtube.com/embed/PDgKjZDP81o"
+},
+{
+  type: "video",
+  id: "vid37",
+  name: "Lps~ The JFK assassination",
+  src: "https://www.youtube.com/embed/v2DxBsWk3w8"
+},
+{
+  type: "video",
+  id: "vid38",
+  name: "EZ CRACKER COMMERCIAL STARRING WENDY KAUFMAN",
+  src: "https://www.youtube.com/embed/PxZxYZdzpWk"
+},
+{
+  type: "video",
+  id: "vid39",
+  name: "MIRAAANDAAA - a monsterprom animatic",
+  src: "https://www.youtube.com/embed/S36YXIdBKzw"
+},
+{
+  type: "video",
+  id: "vid40",
+  name: "Todrick Hall - McDonalds Drive Thru Song",
+  src: "https://www.youtube.com/embed/DgaN2C_mfH8"
+},
+{
+  type: "video",
+  id: "vid41",
+  name: "it's benny worm",
+  src: "https://www.youtube.com/embed/wPpeO_GbKrc"
+},
+{
+  type: "video",
+  id: "vid42",
+  name: "Bears Dance to Sweet Dreams (Remastered)",
+  src: "https://www.youtube.com/embed/Zq9gy6MFrl4"
+},
+{
+  type: "video",
+  id: "vid43",
+  name: "Fish Mascot Eats Worker (Original)",
+  src: "https://www.youtube.com/embed/BSj3jj7DHH4"
+},
+{
+  type: "video",
+  id: "vid44",
+  name: "WELCOME TO THE PHANDOM || an original song :)",
+  src: "https://www.youtube.com/embed/hk3X-phgNq0"
+},
+{
+  type: "video",
+  id: "vid45",
+  name: "Curse of The Weggy Board",
+  src: "https://www.youtube.com/embed/15nNY7uofNw"
+},
+{
+  type: "video",
+  id: "vid46",
+  name: "rich goes to starbucks || BE MORE CHILL ANIMATIC",
+  src: "https://www.youtube.com/embed/czTScdDBRCg"
+},
+{
+  type: "video",
+  id: "vid47",
+  name: "Jesse Boy - J Pee I'm Not Gay (Music Video)",
+  src: "https://www.youtube.com/embed/CTIncDdEWHI"
+},
+{
+  type: "video",
+  id: "vid48",
+  name: "Google Translate Sings: \"Shape of You\" by Ed Sheeran",
+  src: "https://www.youtube.com/embed/Rte07sl3Vf4"
+},
+{
+  type: "video",
+  id: "vid49",
+  name: "MUUUSIC MAN! (MatPat Remix)",
+  src: "https://www.youtube.com/embed/3Rh6E_5WvxM"
+},
+{
+  type: "video",
+  id: "vid50",
+  name: "Mom found the yaoi",
+  src: "https://www.youtube.com/embed/9f95CwLVbck"
+},
+  { type: "video", id: "vid51", name: "Charlie bit my finger - again !", src: "https://www.youtube.com/embed/_OBlgSz8sSM" },
+  { type: "video", id: "vid52", name: "Dramatic Look", src: "https://www.youtube.com/embed/y8Kyi0WNg40" },
+  { type: "video", id: "vid53", name: "Skateboarding Dog", src: "https://www.youtube.com/embed/CQzUsTFqtW0" },
+  { type: "video", id: "vid54", name: "Keyboard Cat! - THE ORIGINAL!", src: "https://www.youtube.com/embed/J---aiyznGQ" },
+  { type: "video", id: "vid55", name: "The Duck Song", src: "https://www.youtube.com/embed/MtN1YnoL46Q" },
+  { type: "video", id: "vid56", name: "2 HOURS of Nostalgic Club Penguin Christmas Music", src: "https://www.youtube.com/embed/tj0HXZ0PFwk" },
+  { type: "video", id: "vid57", name: "Starburst Berries and Cream Little Lad Wants You!", src: "https://www.youtube.com/embed/Q096w0Fz2p4" },
+  { type: "video", id: "vid58", name: "Dog of Wisdom", src: "https://www.youtube.com/embed/D-UmfqFjpl0" },
+  { type: "video", id: "vid59", name: "Idiots In Cars 300 (BEST OF)", src: "https://www.youtube.com/embed/ZAYuNtMgMQg" },
+  { type: "video", id: "vid60", name: "Would You Rather - Build Your Fantasy House", src: "https://www.youtube.com/embed/TvcjVQ0UobI" },
+  { type: "video", id: "vid61", name: "1 HOUR Color Mixing BEST Compilation", src: "https://www.youtube.com/embed/CzRgH46A-4c" },
+  { type: "video", id: "vid62", name: "🚦 ASMR - Playing Rush Hour / traffic JAM", src: "https://www.youtube.com/embed/Bo7fAFwsBns" },
+  { type: "video", id: "vid63", name: "Na Na Na (Brainrot Version)", src: "https://www.youtube.com/embed/efYzHa24jno" },
+  { type: "video", id: "vid64", name: "ALL References in The Henry Stickmin Collection explained", src: "https://www.youtube.com/embed/OcLU07tnfv4" },
+  { type: "video", id: "vid65", name: "Markiplier singing didn't I do it for you", src: "https://www.youtube.com/embed/SSyIz3uo2P8" },
+  { type: "video", id: "vid66", name: "Disney Parks Wishables Muppet Vision 3D Blind Bag Opening", src: "https://www.youtube.com/embed/mHUd5-JS6jY" },
+  { type: "video", id: "vid67", name: "The Inevitable Vision Spinoff", src: "https://www.youtube.com/embed/zuhYyBk7cY8" },
+  { type: "video", id: "vid68", name: "Weezer's Album Discography, but only when they say \"come\"", src: "https://www.youtube.com/embed/gubad5mz8mY" },
+  { type: "video", id: "vid69", name: "All our food keeps blowing up", src: "https://www.youtube.com/embed/ts0KGLmBO0o" },
+  { type: "video", id: "vid70", name: "Bad Apple!! PV", src: "https://www.youtube.com/embed/FtutLA63Cp8" },
+  { type: "video", id: "vid71", name: "wE jUsT gOt To BeD", src: "https://www.youtube.com/embed/crBT-ZiAwgM" },
+  { type: "video", id: "vid72", name: "Meanwhile somewhere in Costa Rica", src: "https://www.youtube.com/embed/WprT6Hyx7pM" },
+  { type: "video", id: "vid73", name: "Dog eats Bean Burrito in 1 second", src: "https://www.youtube.com/embed/Wb3UrJjAac4" },
+  { type: "video", id: "vid74", name: "HELLO KITTY IN SPACE", src: "https://www.youtube.com/embed/5REsCTG4-Gg" },
+  { type: "video", id: "vid75", name: "Hey, Brad's score is still on there", src: "https://www.youtube.com/embed/FPba1r8oM5s" },
+  { type: "video", id: "vid76", name: "You have to treat a car like you treat a woman", src: "https://www.youtube.com/embed/wyEUqfs8s5k" },
+  { type: "video", id: "vid77", name: "You have to put the CD in your Computer", src: "https://www.youtube.com/embed/slwmJLaVrdE" },
+  { type: "video", id: "vid78", name: "There is no fridge with epic music", src: "https://www.youtube.com/embed/mA2mcp297jg" },
+  { type: "video", id: "vid79", name: "This is my gamer pad!", src: "https://www.youtube.com/embed/7jeMp7qdS2U" },
+  { type: "video", id: "vid80", name: "BooBoo & The Washing Machine of Doom!", src: "https://www.youtube.com/embed/6KcsS36FwYQ" },
+  { type: "video", id: "vid81", name: "slowly approaching bear", src: "https://www.youtube.com/embed/GprOS09Ctao" },
+  { type: "video", id: "vid82", name: "What's So Funny?", src: "https://www.youtube.com/embed/oZYJIs5tGCU" },
+  { type: "video", id: "vid83", name: "Student forgets to turn off voice changer", src: "https://www.youtube.com/embed/unveFSE-u14" },
+  { type: "video", id: "vid84", name: "My Wife vs. Ben & Jerry's Ice Cream Lock", src: "https://www.youtube.com/embed/lod_LUp3ggc" },
+  { type: "video", id: "vid85", name: "Top-Star Express - Jingle", src: "https://www.youtube.com/embed/3pPN3U8O3VQ" },
+  { type: "video", id: "vid86", name: "Dan's Diss Track", src: "https://www.youtube.com/embed/xACdTzmyaQI" },
+  { type: "video", id: "vid87", name: "kid gets dragged into the shadow realm", src: "https://www.youtube.com/embed/6Kii1r7tl18" },
+  { type: "video", id: "vid88", name: "dream smp irl | animation", src: "https://www.youtube.com/embed/vC_HvjYR0aI" },
+  { type: "video", id: "vid89", name: "Crowd Singing Toto's Africa", src: "https://www.youtube.com/embed/RJQLPOozB1A" },
+  { type: "video", id: "vid90", name: "Rabbit stretches for kisses", src: "https://www.youtube.com/embed/okvsVbi0OU8" },
+  { type: "video", id: "vid91", name: "French is Easy.", src: "https://www.youtube.com/embed/4jZE6y-uGJQ" },
+  { type: "video", id: "vid92", name: "{ANIMATION} Kill The Queen", src: "https://www.youtube.com/embed/oaS6HCwxY0Y" },
+  { type: "video", id: "vid93", name: "Goofy, how could you?", src: "https://www.youtube.com/embed/tI1z-OtZt5k" },
+  { type: "video", id: "vid94", name: "give me the ball papa", src: "https://www.youtube.com/embed/QabOws88zD4" },
+  { type: "video", id: "vid95", name: "And then there's Chunky", src: "https://www.youtube.com/embed/fpdP2rbrz9Q" },
+  { type: "video", id: "vid96", name: "Give orange me give eat orange me eat orange", src: "https://www.youtube.com/embed/yMwIorFCzfk" },
+  { type: "video", id: "vid97", name: "Hedgehog Plays Piano. Jazz Style!", src: "https://www.youtube.com/embed/NV4THp-bXo0" },
+  { type: "video", id: "vid98", name: "PIZZA CHALLENGE", src: "https://www.youtube.com/embed/1cgbDMYsLDw" },
+  { type: "video", id: "vid99", name: "froggy groove", src: "https://www.youtube.com/embed/e3JHzyDg1eQ" },
+
+  // IMAGES
+  { type: "image", id: "img001", name: "Image 005eca5268cb3d57f06ddbda0bbf5fed", src: "https://i.pinimg.com/736x/00/5e/ca/005eca5268cb3d57f06ddbda0bbf5fed.jpg" },
+  { type: "image", id: "img002", name: "Image 01a5ccd601069b3640b3ff7c4290d712", src: "https://i.pinimg.com/736x/01/a5/cc/01a5ccd601069b3640b3ff7c4290d712.jpg" },
+  { type: "image", id: "img003", name: "Image 02ec79a8af4f687fa178146b1b0eeef8", src: "https://i.pinimg.com/736x/02/ec/79/02ec79a8af4f687fa178146b1b0eeef8.jpg" },
+  { type: "image", id: "img004", name: "Image 0325a7d30b6d3b07ac37c80d9f1f874c", src: "https://i.pinimg.com/736x/03/25/a7/0325a7d30b6d3b07ac37c80d9f1f874c.jpg" },
+  { type: "image", id: "img005", name: "Image 0544c5c28156a0564f11512092d4f991", src: "https://i.pinimg.com/736x/05/44/c5/0544c5c28156a0564f11512092d4f991.jpg" },
+  { type: "image", id: "img006", name: "Image 08ef68abe628fd9d574766ac9b903cd8", src: "https://i.pinimg.com/736x/08/ef/68/08ef68abe628fd9d574766ac9b903cd8.jpg" },
+  { type: "image", id: "img007", name: "Image 0d34c19249652485125165c1041a4843", src: "https://i.pinimg.com/736x/0d/34/c1/0d34c19249652485125165c1041a4843.jpg" },
+  { type: "image", id: "img008", name: "Image 0ebc14666f2ab74d9684584e359e3f41", src: "https://i.pinimg.com/736x/0e/bc/14/0ebc14666f2ab74d9684584e359e3f41.jpg" },
+  { type: "image", id: "img009", name: "Image 0ecf788db2269676057cd99f2008cba9", src: "https://i.pinimg.com/736x/0e/cf/78/0ecf788db2269676057cd99f2008cba9.jpg" },
+  { type: "image", id: "img010", name: "Image 142439c68c65f8b4d77b99d989f8f26d", src: "https://i.pinimg.com/736x/14/24/39/142439c68c65f8b4d77b99d989f8f26d.jpg" },
+  { type: "image", id: "img011", name: "Image 150589ec0936264f92e6892b6db6c66c", src: "https://i.pinimg.com/736x/15/05/89/150589ec0936264f92e6892b6db6c66c.jpg" },
+  { type: "image", id: "img012", name: "Image 17bbd4149afc514599d610d7ae5ba498", src: "https://i.pinimg.com/736x/17/bb/d4/17bbd4149afc514599d610d7ae5ba498.jpg" },
+  { type: "image", id: "img013", name: "Image 1aba8ad2bef11c1ffd294b3cac73b060", src: "https://i.pinimg.com/736x/1a/ba/8a/1aba8ad2bef11c1ffd294b3cac73b060.jpg" },
+  { type: "image", id: "img014", name: "Image 1b0b6dd98ff0ede73b9a535cb23cf245", src: "https://i.pinimg.com/736x/1b/0b/6d/1b0b6dd98ff0ede73b9a535cb23cf245.jpg" },
+  { type: "image", id: "img015", name: "Image 1c5887032563a74ae95971b31dbac466", src: "https://i.pinimg.com/736x/1c/58/87/1c5887032563a74ae95971b31dbac466.jpg" },
+  { type: "image", id: "img016", name: "Image 1db667c70a6d0bdd55c9290fcc1dfff5", src: "https://i.pinimg.com/736x/1d/b6/67/1db667c70a6d0bdd55c9290fcc1dfff5.jpg" },
+  { type: "image", id: "img017", name: "Image 1e475bdb8d192180fdf7190c7a726e70", src: "https://i.pinimg.com/736x/1e/47/5b/1e475bdb8d192180fdf7190c7a726e70.jpg" },
+  { type: "image", id: "img018", name: "Image 20aa3d2e3df6e75e4b8734b16ad34943", src: "https://i.pinimg.com/736x/20/aa/3d/20aa3d2e3df6e75e4b8734b16ad34943.jpg" },
+  { type: "image", id: "img019", name: "Image 23dd4b65b9c3a1638bfac53cf1c1e9ed", src: "https://i.pinimg.com/736x/23/dd/4b/23dd4b65b9c3a1638bfac53cf1c1e9ed.jpg" },
+  { type: "image", id: "img020", name: "Image 2497d95d1480d5330b0baeebcfa5f2a0", src: "https://i.pinimg.com/736x/24/97/d9/2497d95d1480d5330b0baeebcfa5f2a0.jpg" },
+  { type: "image", id: "img021", name: "Image 250ef1891522a2bf63b9fffe6dc6463f", src: "https://i.pinimg.com/736x/25/0e/f1/250ef1891522a2bf63b9fffe6dc6463f.jpg" },
+  { type: "image", id: "img022", name: "Image 29e55f43de46b2fb9c3c4385376fcc83", src: "https://i.pinimg.com/736x/29/e5/5f/29e55f43de46b2fb9c3c4385376fcc83.jpg" },
+  { type: "image", id: "img023", name: "Image 2b97c471d496e2465f0abccb43813ea9", src: "https://i.pinimg.com/736x/2b/97/c4/2b97c471d496e2465f0abccb43813ea9.jpg" },
+  { type: "image", id: "img024", name: "Image 2d858af47e2065f959976c8f2e7fc387", src: "https://i.pinimg.com/736x/2d/85/8a/2d858af47e2065f959976c8f2e7fc387.jpg" },
+  { type: "image", id: "img025", name: "Image 2dd8060db30d82a589612a15714b08b4", src: "https://i.pinimg.com/736x/2d/d8/06/2dd8060db30d82a589612a15714b08b4.jpg" },
+  { type: "image", id: "img026", name: "Image 2e2ddbdaca9f0dba22d50be1cdb511b0", src: "https://i.pinimg.com/736x/2e/2d/db/2e2ddbdaca9f0dba22d50be1cdb511b0.jpg" },
+  { type: "image", id: "img027", name: "Image 328b98248545f35072673b3711312aa7", src: "https://i.pinimg.com/736x/32/8b/98/328b98248545f35072673b3711312aa7.jpg" },
+  { type: "image", id: "img028", name: "Image 399a841161b1d3da55e1479c1c4e0a2a", src: "https://i.pinimg.com/736x/39/9a/84/399a841161b1d3da55e1479c1c4e0a2a.jpg" },
+  { type: "image", id: "img029", name: "Image 3a92e9d4ea2a5cbe71df0bf5b11bc193", src: "https://i.pinimg.com/736x/3a/92/e9/3a92e9d4ea2a5cbe71df0bf5b11bc193.jpg" },
+  { type: "image", id: "img030", name: "Image 3b6d331a2610bfeb6ab0bf8c6d200236", src: "https://i.pinimg.com/736x/3b/6d/33/3b6d331a2610bfeb6ab0bf8c6d200236.jpg" },
+  { type: "image", id: "img031", name: "Image 3d62b3d87748b057ee2a5c670bef2018", src: "https://i.pinimg.com/736x/3d/62/b3/3d62b3d87748b057ee2a5c670bef2018.jpg" },
+  { type: "image", id: "img032", name: "Image 43da4fabc1c2f966576a867844f134da", src: "https://i.pinimg.com/736x/43/da/4f/43da4fabc1c2f966576a867844f134da.jpg" },
+  { type: "image", id: "img033", name: "Image 44d8c2e04f0a4f1b2244d085a0c0da2c", src: "https://i.pinimg.com/736x/44/d8/c2/44d8c2e04f0a4f1b2244d085a0c0da2c.jpg" },
+  { type: "image", id: "img034", name: "Image 486489eef11ede16b9c4ce9620997d03", src: "https://i.pinimg.com/736x/48/64/89/486489eef11ede16b9c4ce9620997d03.jpg" },
+  { type: "image", id: "img035", name: "Image 487e6ff8730f404f6a7603cfb99c890d", src: "https://i.pinimg.com/736x/48/7e/6f/487e6ff8730f404f6a7603cfb99c890d.jpg" },
+  { type: "image", id: "img036", name: "Image 48cecc3b9cfc0a5002a370cca1841f13", src: "https://i.pinimg.com/736x/48/ce/cc/48cecc3b9cfc0a5002a370cca1841f13.jpg" },
+  { type: "image", id: "img037", name: "Image 48db73558a8bd6a5cae82daf6bbce7bf", src: "https://i.pinimg.com/736x/48/db/73/48db73558a8bd6a5cae82daf6bbce7bf.jpg" },
+  { type: "image", id: "img038", name: "Image 4a548ee5cfa2e098e5581b2f0a4947ff", src: "https://i.pinimg.com/736x/4a/54/8e/4a548ee5cfa2e098e5581b2f0a4947ff.jpg" },
+  { type: "image", id: "img039", name: "Image 4adf797d4a9ff0b9902378870c4d295b", src: "https://i.pinimg.com/736x/4a/df/79/4adf797d4a9ff0b9902378870c4d295b.jpg" },
+  { type: "image", id: "img040", name: "Image 4d9fee66fa7c08ab29705c4984e8338d", src: "https://i.pinimg.com/736x/4d/9f/ee/4d9fee66fa7c08ab29705c4984e8338d.jpg" },
+  { type: "image", id: "img041", name: "Image 5037c95162a57e969e1d3e1769865596", src: "https://i.pinimg.com/736x/50/37/c9/5037c95162a57e969e1d3e1769865596.jpg" },
+  { type: "image", id: "img042", name: "Image 51489afcc4e9db9bbc3668bfe943a2c0", src: "https://i.pinimg.com/736x/51/48/9a/51489afcc4e9db9bbc3668bfe943a2c0.jpg" },
+  { type: "image", id: "img043", name: "Image 52a8653ede2cec2e90fad30a4c69a214", src: "https://i.pinimg.com/736x/52/a8/65/52a8653ede2cec2e90fad30a4c69a214.jpg" },
+  { type: "image", id: "img044", name: "Image 52c7214044a98348ddb844837e83fd3c", src: "https://i.pinimg.com/736x/52/c7/21/52c7214044a98348ddb844837e83fd3c.jpg" },
+  { type: "image", id: "img045", name: "Image 55e5ca8a3dd7597b0a291251b8bb2ced", src: "https://i.pinimg.com/736x/55/e5/ca/55e5ca8a3dd7597b0a291251b8bb2ced.jpg" },
+  { type: "image", id: "img046", name: "Image 55f7c847a42144f11e22856333353041", src: "https://i.pinimg.com/736x/55/f7/c8/55f7c847a42144f11e22856333353041.jpg" },
+  { type: "image", id: "img047", name: "Image 563fb8bd5abc9cd979e8b153dc0382b3", src: "https://i.pinimg.com/736x/56/3f/b8/563fb8bd5abc9cd979e8b153dc0382b3.jpg" },
+  { type: "image", id: "img048", name: "Image 5702c67cccfa9763808d1433b97ac034", src: "https://i.pinimg.com/736x/57/02/c6/5702c67cccfa9763808d1433b97ac034.jpg" },
+  { type: "image", id: "img049", name: "Image 59099966dcee49523e359a7ce89956f9", src: "https://i.pinimg.com/736x/59/09/99/59099966dcee49523e359a7ce89956f9.jpg" },
+  { type: "image", id: "img050", name: "Image 5a4e795769c3f470b1965530983a80c6", src: "https://i.pinimg.com/736x/5a/4e/79/5a4e795769c3f470b1965530983a80c6.jpg" },
+  { type: "image", id: "img051", name: "Image 5b86c89528478a31d8898141446bdf5e", src: "https://i.pinimg.com/736x/5b/86/c8/5b86c89528478a31d8898141446bdf5e.jpg" },
+  { type: "image", id: "img052", name: "Image 5c4d78a24edcba6c54702a1bcbcd2b1f", src: "https://i.pinimg.com/736x/5c/4d/78/5c4d78a24edcba6c54702a1bcbcd2b1f.jpg" },
+  { type: "image", id: "img053", name: "Image 5da9af593ffbf4f74033156459e0c048", src: "https://i.pinimg.com/736x/5d/a9/af/5da9af593ffbf4f74033156459e0c048.jpg" },
+  { type: "image", id: "img054", name: "Image 5e4d45190d94c67993a524e8c7a362b3", src: "https://i.pinimg.com/736x/5e/4d/45/5e4d45190d94c67993a524e8c7a362b3.jpg" },
+  { type: "image", id: "img055", name: "Image 5e874e1c3b94957f72fea463683d0c21", src: "https://i.pinimg.com/736x/5e/87/4e/5e874e1c3b94957f72fea463683d0c21.jpg" },
+  { type: "image", id: "img056", name: "Image 601745e7fce199db7b49dde223aa7827", src: "https://i.pinimg.com/736x/60/17/45/601745e7fce199db7b49dde223aa7827.jpg" },
+  { type: "image", id: "img057", name: "Image 63fe1f794641b483881f9a55e0603bab", src: "https://i.pinimg.com/736x/63/fe/1f/63fe1f794641b483881f9a55e0603bab.jpg" },
+  { type: "image", id: "img058", name: "Image 64418701c426b4e9ce9847b86ca18bee", src: "https://i.pinimg.com/736x/64/41/87/64418701c426b4e9ce9847b86ca18bee.jpg" },
+  { type: "image", id: "img059", name: "Image 65b5ebd4be0bae3a24e35ed4011158d4", src: "https://i.pinimg.com/736x/65/b5/eb/65b5ebd4be0bae3a24e35ed4011158d4.jpg" },
+  { type: "image", id: "img060", name: "Image 67afad56c30541fcdba886599124268c", src: "https://i.pinimg.com/736x/67/af/ad/67afad56c30541fcdba886599124268c.jpg" },
+  { type: "image", id: "img061", name: "Image 68344d525aab25f3c1ac936ebd5a7fd0", src: "https://i.pinimg.com/736x/68/34/4d/68344d525aab25f3c1ac936ebd5a7fd0.jpg" },
+  { type: "image", id: "img062", name: "Image 694f5a13143ff783adeea80cdedda5b6", src: "https://i.pinimg.com/736x/69/4f/5a/694f5a13143ff783adeea80cdedda5b6.jpg" },
+  { type: "image", id: "img063", name: "Image 6b206473d61af68b2a1d1363cf57f7e9", src: "https://i.pinimg.com/736x/6b/20/64/6b206473d61af68b2a1d1363cf57f7e9.jpg" },
+  { type: "image", id: "img064", name: "Image 6c1b94a30e83f391f6f665f8917de737", src: "https://i.pinimg.com/736x/6c/1b/94/6c1b94a30e83f391f6f665f8917de737.jpg" },
+  { type: "image", id: "img065", name: "Image 6c76c2b2581ffcd44e71b2701dd7b0c3", src: "https://i.pinimg.com/736x/6c/76/c2/6c76c2b2581ffcd44e71b2701dd7b0c3.jpg" },
+  { type: "image", id: "img066", name: "Image 6e8bbed15b5cc9e288d75f49c7c2e6e7", src: "https://i.pinimg.com/736x/6e/8b/be/6e8bbed15b5cc9e288d75f49c7c2e6e7.jpg" },
+  { type: "image", id: "img067", name: "Image 6f4611b28a94f22648d2fcff42651ee2", src: "https://i.pinimg.com/736x/6f/46/11/6f4611b28a94f22648d2fcff42651ee2.jpg" },
+  { type: "image", id: "img068", name: "Image 70619d143cf302f922308538b0fd2c32", src: "https://i.pinimg.com/736x/70/61/9d/70619d143cf302f922308538b0fd2c32.jpg" },
+  { type: "image", id: "img069", name: "Image 70c82e749723099079e622a0ecf4dd99", src: "https://i.pinimg.com/736x/70/c8/2e/70c82e749723099079e622a0ecf4dd99.jpg" },
+  { type: "image", id: "img070", name: "Image 73d23be6e606b3605383dc6192b4ca34", src: "https://i.pinimg.com/736x/73/d2/3b/73d23be6e606b3605383dc6192b4ca34.jpg" },
+  { type: "image", id: "img071", name: "Image 7417c189b1ad7f147ee9775ba818c212", src: "https://i.pinimg.com/736x/74/17/c1/7417c189b1ad7f147ee9775ba818c212.jpg" },
+  { type: "image", id: "img072", name: "Image 752f5159390ad816395c3c1d7e6909f2", src: "https://i.pinimg.com/736x/75/2f/51/752f5159390ad816395c3c1d7e6909f2.jpg" },
+  { type: "image", id: "img073", name: "Image 7743563648c9aaf0ce31db3661e4b807", src: "https://i.pinimg.com/736x/77/43/56/7743563648c9aaf0ce31db3661e4b807.jpg" },
+  { type: "image", id: "img074", name: "Image 7a3dbf5b5e65f59a16ec1bb97d7d27fc", src: "https://i.pinimg.com/736x/7a/3d/bf/7a3dbf5b5e65f59a16ec1bb97d7d27fc.jpg" },
+  { type: "image", id: "img075", name: "Image 7a7cee3e1edf6c034b681193735f22e2", src: "https://i.pinimg.com/736x/7a/7c/ee/7a7cee3e1edf6c034b681193735f22e2.jpg" },
+  { type: "image", id: "img076", name: "Image 7b4c39df8df2061ec665fe69268632d0", src: "https://i.pinimg.com/736x/7b/4c/39/7b4c39df8df2061ec665fe69268632d0.jpg" },
+  { type: "image", id: "img077", name: "Image 7b9889a22df0a2cbc2e1798fcb8301b6", src: "https://i.pinimg.com/736x/7b/98/89/7b9889a22df0a2cbc2e1798fcb8301b6.jpg" },
+  { type: "image", id: "img078", name: "Image 7bf4e2fb6596b8464db65fe2263b4c45", src: "https://i.pinimg.com/736x/7b/f4/e2/7bf4e2fb6596b8464db65fe2263b4c45.jpg" },
+  { type: "image", id: "img079", name: "Image 7cb78db8c97a636ce41977b183a0f07b", src: "https://i.pinimg.com/736x/7c/b7/8d/7cb78db8c97a636ce41977b183a0f07b.jpg" },
+  { type: "image", id: "img080", name: "Image 7e6642e72d5fc36d9e67ad79f5c78a0e", src: "https://i.pinimg.com/736x/7e/66/42/7e6642e72d5fc36d9e67ad79f5c78a0e.jpg" },
+  { type: "image", id: "img081", name: "Image 8186b37627eb2af587bd9729a2bc777e", src: "https://i.pinimg.com/736x/81/86/b3/8186b37627eb2af587bd9729a2bc777e.jpg" },
+  { type: "image", id: "img082", name: "Image 8205d4449527b47556817fc1f370a658", src: "https://i.pinimg.com/736x/82/05/d4/8205d4449527b47556817fc1f370a658.jpg" },
+  { type: "image", id: "img083", name: "Image 88d94588d9d96eef5a376c7a1dbe25db", src: "https://i.pinimg.com/736x/88/d9/45/88d94588d9d96eef5a376c7a1dbe25db.jpg" },
+  { type: "image", id: "img084", name: "Image 8d5659c85cc6af53f56088e5dfb57e38", src: "https://i.pinimg.com/736x/8d/56/59/8d5659c85cc6af53f56088e5dfb57e38.jpg" },
+  { type: "image", id: "img085", name: "Image 8e1bf652146a098d74978eb43c89cc64", src: "https://i.pinimg.com/736x/8e/1b/f6/8e1bf652146a098d74978eb43c89cc64.jpg" },
+  { type: "image", id: "img086", name: "Image 8f9da5952a34934212315b47815a31b0", src: "https://i.pinimg.com/736x/8f/9d/a5/8f9da5952a34934212315b47815a31b0.jpg" },
+  { type: "image", id: "img087", name: "Image 914de72848c01b23104a45f88a1329d5", src: "https://i.pinimg.com/736x/91/4d/e7/914de72848c01b23104a45f88a1329d5.jpg" },
+  { type: "image", id: "img088", name: "Image 919faf58e75f9566d4076700808b164b", src: "https://i.pinimg.com/736x/91/9f/af/919faf58e75f9566d4076700808b164b.jpg" },
+  { type: "image", id: "img089", name: "Image 91c7d21395b904ba4eb362ef0c4c22e4", src: "https://i.pinimg.com/736x/91/c7/d2/91c7d21395b904ba4eb362ef0c4c22e4.jpg" },
+  { type: "image", id: "img090", name: "Image 92589b1208b02ee706fc7180ee3b5893", src: "https://i.pinimg.com/736x/92/58/9b/92589b1208b02ee706fc7180ee3b5893.jpg" },
+  { type: "image", id: "img091", name: "Image 94fd0c7d785110048058d3c418ce54de", src: "https://i.pinimg.com/736x/94/fd/0c/94fd0c7d785110048058d3c418ce54de.jpg" },
+  { type: "image", id: "img092", name: "Image 97a90bfca29d472fc519003fb9d58abf", src: "https://i.pinimg.com/736x/97/a9/0b/97a90bfca29d472fc519003fb9d58abf.jpg" },
+  { type: "image", id: "img093", name: "Image 989bc164fedaea4d27e5984afdad0902", src: "https://i.pinimg.com/736x/98/9b/c1/989bc164fedaea4d27e5984afdad0902.jpg" },
+  { type: "image", id: "img094", name: "Image 993f7e9a87a9050dafc4b8c12eb353cc", src: "https://i.pinimg.com/736x/99/3f/7e/993f7e9a87a9050dafc4b8c12eb353cc.jpg" },
+  { type: "image", id: "img095", name: "Image a0c8fa7f6f6b4aea443a988972349b62", src: "https://i.pinimg.com/736x/a0/c8/fa/a0c8fa7f6f6b4aea443a988972349b62.jpg" },
+  { type: "image", id: "img096", name: "Image a1042de5b404045f73c45848164bd3c1", src: "https://i.pinimg.com/736x/a1/04/2d/a1042de5b404045f73c45848164bd3c1.jpg" },
+  { type: "image", id: "img097", name: "Image a3d7504e1ca7abb11a8e146a8e0d574b", src: "https://i.pinimg.com/736x/a3/d7/50/a3d7504e1ca7abb11a8e146a8e0d574b.jpg" },
+  { type: "image", id: "img098", name: "Image a51ebef7710fce253ff42280b3a6d91a", src: "https://i.pinimg.com/736x/a5/1e/be/a51ebef7710fce253ff42280b3a6d91a.jpg" },
+  { type: "image", id: "img099", name: "Image a655e29fa554e5bc0e0a79ed135b154c", src: "https://i.pinimg.com/736x/a6/55/e2/a655e29fa554e5bc0e0a79ed135b154c.jpg" },
+  { type: "image", id: "img100", name: "Image a9274ccc1abd6850576c46863936fa9c", src: "https://i.pinimg.com/736x/a9/27/4c/a9274ccc1abd6850576c46863936fa9c.jpg" },
+  { type: "image", id: "img101", name: "Image ad71b45521f17bd11930d0af260d309f", src: "https://i.pinimg.com/736x/ad/71/b4/ad71b45521f17bd11930d0af260d309f.jpg" },
+  { type: "image", id: "img102", name: "Image afd62aa5f48045be046c80e9a8b95fb5", src: "https://i.pinimg.com/736x/af/d6/2a/afd62aa5f48045be046c80e9a8b95fb5.jpg" },
+  { type: "image", id: "img103", name: "Image b0e97af69eff8e8a6f938f4c50431349", src: "https://i.pinimg.com/736x/b0/e9/7a/b0e97af69eff8e8a6f938f4c50431349.jpg" },
+  { type: "image", id: "img104", name: "Image b2f7a5a3f84c4875163562500e63a5aa", src: "https://i.pinimg.com/736x/b2/f7/a5/b2f7a5a3f84c4875163562500e63a5aa.jpg" },
+  { type: "image", id: "img105", name: "Image b7af23d307536eb697b189e71533d936", src: "https://i.pinimg.com/736x/b7/af/23/b7af23d307536eb697b189e71533d936.jpg" },
+  { type: "image", id: "img106", name: "Image b9cf90e068be990ca8069f0c2731b3bf", src: "https://i.pinimg.com/736x/b9/cf/90/b9cf90e068be990ca8069f0c2731b3bf.jpg" },
+  { type: "image", id: "img107", name: "Image bc2b832cbf9a17364ef3ecccf56ac2c3", src: "https://i.pinimg.com/736x/bc/2b/83/bc2b832cbf9a17364ef3ecccf56ac2c3.jpg" },
+  { type: "image", id: "img108", name: "Image bcaaf835586b89a795c68648e19f3cf5", src: "https://i.pinimg.com/736x/bc/aa/f8/bcaaf835586b89a795c68648e19f3cf5.jpg" },
+  { type: "image", id: "img109", name: "Image bebc3926f19ab405c6f429fbcaac7d6a", src: "https://i.pinimg.com/736x/be/bc/39/bebc3926f19ab405c6f429fbcaac7d6a.jpg" },
+  { type: "image", id: "img110", name: "Image c357f09e6c1511e9e0c71ad3e4992b67", src: "https://i.pinimg.com/736x/c3/57/f0/c357f09e6c1511e9e0c71ad3e4992b67.jpg" },
+  { type: "image", id: "img111", name: "Image c6929f0c9f70d2a4db4fc48e0db0f639", src: "https://i.pinimg.com/736x/c6/92/9f/c6929f0c9f70d2a4db4fc48e0db0f639.jpg" },
+  { type: "image", id: "img112", name: "Image c8521d8a73ac74361675acd631071966", src: "https://i.pinimg.com/736x/c8/52/1d/c8521d8a73ac74361675acd631071966.jpg" },
+  { type: "image", id: "img113", name: "Image cdd189b1039f112d3be1d682a9c1f059", src: "https://i.pinimg.com/736x/cd/d1/89/cdd189b1039f112d3be1d682a9c1f059.jpg" },
+  { type: "image", id: "img114", name: "Image d00f9e777cbac5c012994e959064fe12", src: "https://i.pinimg.com/736x/d0/0f/9e/d00f9e777cbac5c012994e959064fe12.jpg" },
+  { type: "image", id: "img115", name: "Image d063c49b043f16dc252a81522c3e9b21", src: "https://i.pinimg.com/736x/d0/63/c4/d063c49b043f16dc252a81522c3e9b21.jpg" },
+  { type: "image", id: "img116", name: "Image d1560537e1c0912e2441cd350717ef34", src: "https://i.pinimg.com/736x/d1/56/05/d1560537e1c0912e2441cd350717ef34.jpg" },
+  { type: "image", id: "img117", name: "Image d168670d7ddf38f52f30f2f52c912cd9", src: "https://i.pinimg.com/736x/d1/68/67/d168670d7ddf38f52f30f2f52c912cd9.jpg" },
+  { type: "image", id: "img118", name: "Image d3323453982afe1d3df5d84e18f67119", src: "https://i.pinimg.com/736x/d3/32/34/d3323453982afe1d3df5d84e18f67119.jpg" },
+  { type: "image", id: "img119", name: "Image d36ce01c2ff2642c1315082687354a22", src: "https://i.pinimg.com/736x/d3/6c/e0/d36ce01c2ff2642c1315082687354a22.jpg" },
+  { type: "image", id: "img120", name: "Image d413efae4293eb18953f8850f7e85c28", src: "https://i.pinimg.com/736x/d4/13/ef/d413efae4293eb18953f8850f7e85c28.jpg" },
+  { type: "image", id: "img121", name: "Image d963a54f31fbf234f67e26b4df4aa9d5", src: "https://i.pinimg.com/736x/d9/63/a5/d963a54f31fbf234f67e26b4df4aa9d5.jpg" },
+  { type: "image", id: "img122", name: "Image db3702b4119f1f3adc5ff933ee3ea3fe", src: "https://i.pinimg.com/736x/db/37/02/db3702b4119f1f3adc5ff933ee3ea3fe.jpg" },
+  { type: "image", id: "img123", name: "Image dbed8b01ed436ebbbee834c54f2e50d2", src: "https://i.pinimg.com/736x/db/ed/8b/dbed8b01ed436ebbbee834c54f2e50d2.jpg" },
+  { type: "image", id: "img124", name: "Image deb7624e7aad950bb14daad6652cd31d", src: "https://i.pinimg.com/736x/de/b7/62/deb7624e7aad950bb14daad6652cd31d.jpg" },
+  { type: "image", id: "img125", name: "Image df21f390d772c58282aa70f252627163", src: "https://i.pinimg.com/736x/df/21/f3/df21f390d772c58282aa70f252627163.jpg" },
+  { type: "image", id: "img126", name: "Image dff5adf4d8e6adff5a519061d5a84bc1", src: "https://i.pinimg.com/736x/df/f5/ad/dff5adf4d8e6adff5a519061d5a84bc1.jpg" },
+  { type: "image", id: "img127", name: "Image e0f9fa26e4a08bd4f3bcafdae2a38fed", src: "https://i.pinimg.com/736x/e0/f9/fa/e0f9fa26e4a08bd4f3bcafdae2a38fed.jpg" },
+  { type: "image", id: "img128", name: "Image e28ce400493f66e068e931049f8e3355", src: "https://i.pinimg.com/736x/e2/8c/e4/e28ce400493f66e068e931049f8e3355.jpg" },
+  { type: "image", id: "img129", name: "Image e2a11012707c35e4da601c98e9839900", src: "https://i.pinimg.com/736x/e2/a1/10/e2a11012707c35e4da601c98e9839900.jpg" },
+  { type: "image", id: "img130", name: "Image e58aa6f8c4297d509f1833efc0a681d2", src: "https://i.pinimg.com/736x/e5/8a/a6/e58aa6f8c4297d509f1833efc0a681d2.jpg" },
+  { type: "image", id: "img131", name: "Image e5c551ed8142fd49d7febb1e19d465e8", src: "https://i.pinimg.com/736x/e5/c5/51/e5c551ed8142fd49d7febb1e19d465e8.jpg" },
+  { type: "image", id: "img132", name: "Image e5f0dacb6dc8c2cae1abee37039e13e4", src: "https://i.pinimg.com/736x/e5/f0/da/e5f0dacb6dc8c2cae1abee37039e13e4.jpg" },
+  { type: "image", id: "img133", name: "Image e83a1d320264363e08bee917068f6bd1", src: "https://i.pinimg.com/736x/e8/3a/1d/e83a1d320264363e08bee917068f6bd1.jpg" },
+  { type: "image", id: "img134", name: "Image e9a10f140f81eb7059d13cd069be5667", src: "https://i.pinimg.com/736x/e9/a1/0f/e9a10f140f81eb7059d13cd069be5667.jpg" },
+  { type: "image", id: "img135", name: "Image e9c363e702baab6eaec16a2e0a497215", src: "https://i.pinimg.com/736x/e9/c3/63/e9c363e702baab6eaec16a2e0a497215.jpg" },
+  { type: "image", id: "img136", name: "Image ea4b2d148e6a415bee46820209d4a209", src: "https://i.pinimg.com/736x/ea/4b/2d/ea4b2d148e6a415bee46820209d4a209.jpg" },
+  { type: "image", id: "img137", name: "Image eae061c299bdf29a9ae624f78d26885a", src: "https://i.pinimg.com/736x/ea/e0/61/eae061c299bdf29a9ae624f78d26885a.jpg" },
+  { type: "image", id: "img138", name: "Image f1929f9fd422946f5d783ec3cc23af67", src: "https://i.pinimg.com/736x/f1/92/9f/f1929f9fd422946f5d783ec3cc23af67.jpg" },
+  { type: "image", id: "img139", name: "Image f29c794776b83dd8cc9513a752e03096", src: "https://i.pinimg.com/736x/f2/9c/79/f29c794776b83dd8cc9513a752e03096.jpg" },
+  { type: "image", id: "img140", name: "Image f359c086ed5d5a5617ea866bb8bfc089", src: "https://i.pinimg.com/736x/f3/59/c0/f359c086ed5d5a5617ea866bb8bfc089.jpg" },
+  { type: "image", id: "img141", name: "Image f4e9d10a7b63d5698c3990fbcbce83d1", src: "https://i.pinimg.com/736x/f4/e9/d1/f4e9d10a7b63d5698c3990fbcbce83d1.jpg" },
+  { type: "image", id: "img142", name: "Image f92192504f77e492660d49ec084c119e", src: "https://i.pinimg.com/736x/f9/21/92/f92192504f77e492660d49ec084c119e.jpg" },
+  { type: "image", id: "img143", name: "Image fbe2100df9bdd14790402441cd6feaba", src: "https://i.pinimg.com/736x/fb/e2/10/fbe2100df9bdd14790402441cd6feaba.jpg" },
+  { type: "image", id: "img144", name: "Image fcf789a6f11726f6c3c5c5c0e3cddbcf", src: "https://i.pinimg.com/736x/fc/f7/89/fcf789a6f11726f6c3c5c5c0e3cddbcf.jpg" },
+  { type: "image", id: "img145", name: "Image fec421a10a930665efdba60b1ba97e96", src: "https://i.pinimg.com/736x/fe/c4/21/fec421a10a930665efdba60b1ba97e96.jpg" },
+  { type: "image", id: "img146", name: "Image ff2bdeb880027aa1c799eeb771dd6999", src: "https://i.pinimg.com/736x/ff/2b/de/ff2bdeb880027aa1c799eeb771dd6999.jpg" }
+
+  // ⬆️ COPY THESE BLOCKS TO ADD MORE
+];
+
+/* ========================= */
+
+const collected = JSON.parse(localStorage.getItem("gachaCollection")) || {};
+
+const rollBtn = document.getElementById("rollBtn");
+const machine = document.getElementById("machine");
+const prizeBox = document.getElementById("prizeBox");
+const resultText = document.getElementById("resultText");
+const list = document.getElementById("collectionList");
+
+rollBtn.onclick = roll;
+
+function roll() {
+  rollBtn.disabled = true;
+  machine.classList.add("shake");
+  resultText.textContent = "";
+  prizeBox.innerHTML = "";
+
+  setTimeout(() => {
+    machine.classList.remove("shake");
+
+    const prize = prizes[Math.floor(Math.random() * prizes.length)];
+    const isNew = !collected[prize.id];
+
+    showPrize(prize);
+
+    if (isNew) {
+      collected[prize.id] = true;
+      localStorage.setItem("gachaCollection", JSON.stringify(collected));
+      resultText.textContent = "✨ YOU GOT A NEW ONE!";
+      resultText.style.color = "#ff69b4";
+    } else {
+      resultText.textContent = "🔁 DUPLICATE!";
+      resultText.style.color = "#aaa";
+    }
+
+    renderCollection();
+    setTimeout(() => rollBtn.disabled = false, 1000);
+  }, 1000);
+}
+
+function showPrize(prize) {
+  if (prize.type === "video") {
+    prizeBox.innerHTML = `
+      <iframe src="${prize.src}" allowfullscreen></iframe>
+    `;
+  } else {
+    prizeBox.innerHTML = `
+      <img src="${prize.src}" alt="${prize.name}">
+    `;
+  }
+}
+
+function renderCollection() {
+  list.innerHTML = "";
+
+  prizes.forEach(p => {
+    const li = document.createElement("li");
+
+    if (collected[p.id]) {
+      li.textContent = p.name;
+      li.style.color = "#ffb6c1";
+      li.onclick = () => {
+        showPrize(p);
+        resultText.textContent = "📦 From your collection";
+        resultText.style.color = "#7fffd4";
+      };
+    } else {
+      li.textContent = "???";
+    }
+
+    list.appendChild(li);
+  });
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const count = Object.keys(collected).length;
+  const total = prizes.length;
+  const percent = (count / total) * 100;
+
+  document.getElementById("progressText").textContent =
+    `${count} / ${total} collected`;
+
+  document.getElementById("progressFill").style.width = `${percent}%`;
+}
+
+renderCollection();
+</script>
+
+</body>
+</html>
