@@ -2,128 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gachapon Machine</title>
+  <title>Video Gacha</title>
 
   <style>
     body {
-      background: #fff0f6;
-      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
       text-align: center;
       padding: 20px;
-      color: #444;
-    }
-
-    h1 {
-      color: #ff69b4;
     }
 
     #machine {
-      font-size: 120px;
+      font-size: 80px;
       margin: 20px;
     }
 
     .shake {
-      animation: shake 0.6s;
-    }
-
-    .crack {
-      animation: crack 0.8s forwards;
+      animation: shake 0.5s infinite;
     }
 
     @keyframes shake {
       0% { transform: rotate(0deg); }
-      25% { transform: rotate(6deg); }
-      50% { transform: rotate(-6deg); }
-      75% { transform: rotate(6deg); }
+      25% { transform: rotate(5deg); }
+      50% { transform: rotate(-5deg); }
+      75% { transform: rotate(5deg); }
       100% { transform: rotate(0deg); }
     }
 
-    @keyframes crack {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(0); }
-    }
-
     button {
-      background: #ffb6c1;
-      border: none;
-      border-radius: 20px;
-      padding: 12px 24px;
+      padding: 15px 30px;
       font-size: 18px;
+      border-radius: 12px;
       cursor: pointer;
+      border: none;
     }
 
     button:disabled {
-      background: #ffd6e8;
-      cursor: not-allowed;
+      opacity: 0.5;
     }
 
-    #cooldown {
-      margin-top: 10px;
-      font-weight: bold;
+    #resultText {
+      font-size: 32px;
+      margin: 20px;
+      min-height: 40px;
     }
 
-    #prize img, #prize iframe {
-      width: 90%;
-      max-width: 900px;
-      height: 500px;
-      border-radius: 16px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    iframe {
+      width: 720px;
+      height: 405px;
       margin-top: 20px;
-    }
-
-    #log, #collection {
-      margin-top: 30px;
-      background: #fff;
       border-radius: 16px;
-      padding: 15px;
-      max-width: 450px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
     }
 
-    #log h3, #collection h3 {
-      color: #ff69b4;
-      margin-top: 0;
+    ul {
+      list-style: none;
+      padding: 0;
     }
 
-    #collection li {
-      list-style: "🎀 ";
-      margin-left: 10px;
+    li {
+      opacity: 0.8;
+      margin: 4px;
     }
   </style>
 </head>
 
 <body>
 
-  <h1>🎀 Gachapon Machine 🎀</h1>
+<h1>🎰 Video Gacha</h1>
 
-  <div id="machine">🟡</div>
+<div id="machine">✨</div>
 
-  <button id="rollBtn">Turn the Handle</button>
-  <div id="cooldown"></div>
+<button id="rollBtn">ROLL</button>
 
-  <div id="prize"></div>
+<div id="resultText"></div>
+<div id="prizeBox"></div>
 
-  <div id="log">
-    <h3>📜 Prize Log</h3>
-    <ul id="logList"></ul>
-  </div>
+<h2>Your Collection</h2>
+<ul id="collectionList"></ul>
 
-  <div id="collection">
-    <h3>📼 Video Collection</h3>
-    <ul id="collectionList"></ul>
-  </div>
-
-  <script>
-    const COOLDOWN_TIME = 10;
-    let canRoll = true;
-
-    const collectedVideos = {};
-
-    const prizes = [
-      // VIDEO PRIZES
+<script>
+  const prizes = [
+    // VIDEO PRIZES
 {
   type: "video",
   id: "vid01",
@@ -424,95 +384,107 @@
   name: "Mom found the yaoi",
   src: "https://www.youtube.com/embed/9f95CwLVbck"
 },
+  { id: "vid1", name: "Charlie bit my finger - again !", src: "https://www.youtube.com/embed/_OBlgSz8sSM" },
+  { id: "vid2", name: "Dramatic Look", src: "https://www.youtube.com/embed/y8Kyi0WNg40" },
+  { id: "vid3", name: "Skateboarding Dog", src: "https://www.youtube.com/embed/CQzUsTFqtW0" },
+  { id: "vid4", name: "Keyboard Cat! - THE ORIGINAL!", src: "https://www.youtube.com/embed/J---aiyznGQ" },
+  { id: "vid5", name: "The Duck Song", src: "https://www.youtube.com/embed/MtN1YnoL46Q" },
+  { id: "vid6", name: "2 HOURS of Nostalgic Club Penguin Christmas Music", src: "https://www.youtube.com/embed/tj0HXZ0PFwk" },
+  { id: "vid7", name: "Starburst Berries and Cream Little Lad Wants You!", src: "https://www.youtube.com/embed/Q096w0Fz2p4" },
+  { id: "vid8", name: "Dog of Wisdom", src: "https://www.youtube.com/embed/D-UmfqFjpl0" },
+  { id: "vid9", name: "Idiots In Cars 300 (BEST OF)", src: "https://www.youtube.com/embed/ZAYuNtMgMQg" },
+  { id: "vid10", name: "Would You Rather - Build Your Fantasy House", src: "https://www.youtube.com/embed/TvcjVQ0UobI" },
+  { id: "vid11", name: "1 HOUR Color Mixing BEST Compilation", src: "https://www.youtube.com/embed/CzRgH46A-4c" },
+  { id: "vid12", name: "🚦 ASMR - Playing Rush Hour / traffic JAM", src: "https://www.youtube.com/embed/Bo7fAFwsBns" },
+  { id: "vid13", name: "Na Na Na (Brainrot Version)", src: "https://www.youtube.com/embed/efYzHa24jno" },
+  { id: "vid14", name: "ALL References in The Henry Stickmin Collection explained", src: "https://www.youtube.com/embed/OcLU07tnfv4" },
+  { id: "vid15", name: "Markiplier singing didn’t I do it for you", src: "https://www.youtube.com/embed/SSyIz3uo2P8" },
+  { id: "vid16", name: "Disney Parks Wishables Muppet Vision 3D Blind Bag Opening", src: "https://www.youtube.com/embed/mHUd5-JS6jY" },
+  { id: "vid17", name: "The Inevitable Vision Spinoff", src: "https://www.youtube.com/embed/zuhYyBk7cY8" },
+  { id: "vid18", name: "Weezer's Album Discography, but only when they say \"come\"", src: "https://www.youtube.com/embed/gubad5mz8mY" },
+  { id: "vid19", name: "All our food keeps blowing up", src: "https://www.youtube.com/embed/ts0KGLmBO0o" },
+  { id: "vid20", name: "Bad Apple!! PV", src: "https://www.youtube.com/embed/FtutLA63Cp8" },
+  { id: "vid21", name: "wE jUsT gOt To BeD", src: "https://www.youtube.com/embed/crBT-ZiAwgM" },
+  { id: "vid22", name: "Meanwhile somewhere in Costa Rica", src: "https://www.youtube.com/embed/WprT6Hyx7pM" },
+  { id: "vid23", name: "Dog eats Bean Burrito in 1 second", src: "https://www.youtube.com/embed/Wb3UrJjAac4" },
+  { id: "vid24", name: "HELLO KITTY IN SPACE", src: "https://www.youtube.com/embed/5REsCTG4-Gg" },
+  { id: "vid25", name: "Hey, Brad's score is still on there", src: "https://www.youtube.com/embed/FPba1r8oM5s" },
+  { id: "vid26", name: "You have to treat a car like you treat a woman", src: "https://www.youtube.com/embed/wyEUqfs8s5k" },
+  { id: "vid27", name: "You have to put the CD in your Computer", src: "https://www.youtube.com/embed/slwmJLaVrdE" },
+  { id: "vid28", name: "There is no fridge with epic music", src: "https://www.youtube.com/embed/mA2mcp297jg" },
+  { id: "vid29", name: "This is my gamer pad!", src: "https://www.youtube.com/embed/7jeMp7qdS2U" },
+  { id: "vid30", name: "BooBoo & The Washing Machine of Doom!", src: "https://www.youtube.com/embed/6KcsS36FwYQ" },
+  { id: "vid31", name: "slowly approaching bear", src: "https://www.youtube.com/embed/GprOS09Ctao" },
+  { id: "vid32", name: "What's So Funny?", src: "https://www.youtube.com/embed/oZYJIs5tGCU" },
+  { id: "vid33", name: "Student forgets to turn off voice changer", src: "https://www.youtube.com/embed/unveFSE-u14" },
+  { id: "vid34", name: "My Wife vs. Ben & Jerry’s Ice Cream Lock", src: "https://www.youtube.com/embed/lod_LUp3ggc" },
+  { id: "vid35", name: "Top-Star Express - Jingle", src: "https://www.youtube.com/embed/3pPN3U8O3VQ" },
+  { id: "vid36", name: "Dan's Diss Track", src: "https://www.youtube.com/embed/xACdTzmyaQI" },
+  { id: "vid37", name: "kid gets dragged into the shadow realm", src: "https://www.youtube.com/embed/6Kii1r7tl18" },
+  { id: "vid38", name: "dream smp irl | animation", src: "https://www.youtube.com/embed/vC_HvjYR0aI" },
+  { id: "vid39", name: "Crowd Singing Toto's Africa", src: "https://www.youtube.com/embed/RJQLPOozB1A" },
+  { id: "vid40", name: "Rabbit stretches for kisses", src: "https://www.youtube.com/embed/okvsVbi0OU8" },
+  { id: "vid41", name: "French is Easy.", src: "https://www.youtube.com/embed/4jZE6y-uGJQ" },
+  { id: "vid42", name: "{ANIMATION} Kill The Queen", src: "https://www.youtube.com/embed/oaS6HCwxY0Y" },
+  { id: "vid43", name: "Goofy, how could you?", src: "https://www.youtube.com/embed/tI1z-OtZt5k" },
+  { id: "vid44", name: "give me the ball papa", src: "https://www.youtube.com/embed/QabOws88zD4" },
+  { id: "vid45", name: "And then there’s Chunky", src: "https://www.youtube.com/embed/fpdP2rbrz9Q" },
+  { id: "vid46", name: "Give orange me give eat orange me eat orange", src: "https://www.youtube.com/embed/yMwIorFCzfk" },
+  { id: "vid47", name: "Hedgehog Plays Piano. Jazz Style!", src: "https://www.youtube.com/embed/NV4THp-bXo0" },
+  { id: "vid48", name: "PIZZA CHALLENGE", src: "https://www.youtube.com/embed/1cgbDMYsLDw" },
+  { id: "vid49", name: "froggy groove", src: "https://www.youtube.com/embed/e3JHzyDg1eQ" }
+];
 
-      // ⬆️ you can keep adding the rest exactly like this
-    ];
 
-    function rollGacha() {
-      if (!canRoll) return;
-      canRoll = false;
+  const collected = {};
+  const rollBtn = document.getElementById("rollBtn");
+  const machine = document.getElementById("machine");
+  const prizeBox = document.getElementById("prizeBox");
+  const resultText = document.getElementById("resultText");
+  const list = document.getElementById("collectionList");
 
-      const btn = document.getElementById("rollBtn");
-      const machine = document.getElementById("machine");
-      const prizeBox = document.getElementById("prize");
+  rollBtn.onclick = roll;
 
-      btn.disabled = true;
-      prizeBox.innerHTML = "";
+  function roll() {
+    rollBtn.disabled = true;
+    machine.classList.add("shake");
+    resultText.textContent = "";
+    prizeBox.innerHTML = "";
 
-      machine.textContent = "🟡";
-      machine.className = "shake";
+    setTimeout(() => {
+      machine.classList.remove("shake");
 
-      setTimeout(() => {
-        machine.className = "crack";
-      }, 600);
+      const prize = prizes[Math.floor(Math.random() * prizes.length)];
+      const isNew = !collected[prize.id];
 
-      setTimeout(() => {
-        machine.textContent = "✨";
-        machine.className = "";
+      prizeBox.innerHTML = `
+        <iframe src="${prize.src}" frameborder="0" allowfullscreen></iframe>
+      `;
 
-        const prize = prizes[Math.floor(Math.random() * prizes.length)];
+      if (isNew) {
+        collected[prize.id] = true;
+        resultText.textContent = "✨ YOU GOT A NEW ONE!";
+        resultText.style.color = "#ff69b4";
+      } else {
+        resultText.textContent = "🔁 DUPLICATE!";
+        resultText.style.color = "#aaa";
+      }
 
-       prizeBox.innerHTML = `
-  <iframe
-    src="${prize.src}"
-    frameborder="0"
-    allowfullscreen>
-  </iframe>
-`;
+      renderCollection();
+      setTimeout(() => rollBtn.disabled = false, 1000);
 
+    }, 1200);
+  }
 
-        collectedVideos[prize.id] = true;
-        renderCollection();
-        logPrize(`📼 Video unlocked: ${prize.name}`);
-
-        startCooldown();
-      }, 1400);
-    }
-
-    function renderCollection() {
-      const list = document.getElementById("collectionList");
-      list.innerHTML = "";
-
-      prizes.forEach(video => {
-        const li = document.createElement("li");
-        li.textContent = collectedVideos[video.id]
-          ? video.name
-          : "???";
-        list.appendChild(li);
-      });
-    }
-
-    function startCooldown() {
-      let timeLeft = COOLDOWN_TIME;
-      const cd = document.getElementById("cooldown");
-      const btn = document.getElementById("rollBtn");
-
-      cd.textContent = `⏳ Cooldown: ${timeLeft}s`;
-
-      const timer = setInterval(() => {
-        timeLeft--;
-        cd.textContent = `⏳ Cooldown: ${timeLeft}s`;
-
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          cd.textContent = "";
-          btn.disabled = false;
-          canRoll = true;
-        }
-      }, 1000);
-    }
-
-    function logPrize(text) {
-      const logList = document.getElementById("logList");
-      const item = document.createElement("li");
-      item.textContent = `${new Date().toLocaleTimeString()} — ${text}`;
-      logList.prepend(item);
-    }
-
-    document.getElementById("rollBtn").addEventListener("click", rollGacha);
-
-    renderCollection();
-  </script>
+  function renderCollection() {
+    list.innerHTML = "";
+    prizes.forEach(p => {
+      const li = document.createElement("li");
+      li.textContent = collected[p.id] ? p.name : "???";
+      list.appendChild(li);
+    });
+  }
+</script>
 
 </body>
 </html>
