@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gachapon Machine</title>
+
+  <style>
+    body {
+      background: #fff0f6;
+      font-family: "Comic Sans MS", "Trebuchet MS", sans-serif;
+      text-align: center;
+      padding: 20px;
+      color: #444;
+    }
+
+    h1 {
+      color: #ff69b4;
+    }
+
+    #machine {
+      font-size: 120px;
+      margin: 20px;
+    }
+
+    .shake {
+      animation: shake 0.6s;
+    }
+
+    .crack {
+      animation: crack 0.8s forwards;
+    }
+
+    @keyframes shake {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(6deg); }
+      50% { transform: rotate(-6deg); }
+      75% { transform: rotate(6deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    @keyframes crack {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(0); }
+    }
+
+    button {
+      background: #ffb6c1;
+      border: none;
+      border-radius: 20px;
+      padding: 12px 24px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #ffd6e8;
+      cursor: not-allowed;
+    }
+
+    #cooldown {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    #prize img, #prize iframe {
+      width: 90%;
+      max-width: 900px;
+      height: 500px;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      margin-top: 20px;
+    }
+
+    #log, #collection {
+      margin-top: 30px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 15px;
+      max-width: 450px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    #log h3, #collection h3 {
+      color: #ff69b4;
+      margin-top: 0;
+    }
+
+    #collection li {
+      list-style: "🎀 ";
+      margin-left: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🎀 Gachapon Machine 🎀</h1>
+
+  <div id="machine">🟡</div>
+
+  <button id="rollBtn">Turn the Handle</button>
+  <div id="cooldown"></div>
+
+  <div id="prize"></div>
+
+  <div id="log">
+    <h3>📜 Prize Log</h3>
+    <ul id="logList"></ul>
+  </div>
+
+  <div id="collection">
+    <h3>📼 Video Collection</h3>
+    <ul id="collectionList"></ul>
+  </div>
+
+  <script>
+    const COOLDOWN_TIME = 10;
+    let canRoll = true;
+
+    const collectedVideos = {};
+
+    const prizes = [
+      // VIDEO PRIZES
+{
+  type: "video",
+  id: "vid01",
+  name: "M&Ms Christmas Commercial: THEY DO EXIST!",
+  src: "https://www.youtube.com/embed/iE8CJwXSPRs"
+},
+{
+  type: "video",
+  id: "vid02",
+  name: "zendaya is meechee",
+  src: "https://www.youtube.com/embed/Xx5YqFKjTCY"
+},
+{
+  type: "video",
+  id: "vid03",
+  name: "Peanut Butter Jelly Time with Lyrics!!!",
+  src: "https://www.youtube.com/embed/eRBOgtp0Hac"
+},
+{
+  type: "video",
+  id: "vid04",
+  name: "Roman And Logan - Rap Battle",
+  src: "https://www.youtube.com/embed/lg7wTrLnk64"
+},
+{
+  type: "video",
+  id: "vid05",
+  name: "This Day Aria | FundyWasTaken (? Animatic",
+  src: "https://www.youtube.com/embed/ho2f6Szgmec"
+},
+{
+  type: "video",
+  id: "vid06",
+  name: "DreamSmp Rhapsody || DREAM SMP ANIMATIC ||",
+  src: "https://www.youtube.com/embed/YihXAWuG0hA"
+},
+{
+  type: "video",
+  id: "vid07",
+  name: "Gimme that Filet-O-Fish",
+  src: "https://www.youtube.com/embed/csrPT9ClVUc"
+},
+{
+  type: "video",
+  id: "vid08",
+  name: "Ferb - Backyard Beach (From \"Phineas and Ferb\"/Sing-Along)",
+  src: "https://www.youtube.com/embed/z62uOoYP1TE"
+},
+{
+  type: "video",
+  id: "vid09",
+  name: "Aaron Burr, Sir || Hamilton Animatic",
+  src: "https://www.youtube.com/embed/7Z6U9WaZXkY"
+},
+{
+  type: "video",
+  id: "vid10",
+  name: "Dramatic fart sound effect 😂",
+  src: "https://www.youtube.com/embed/ilfTfC0FQcc"
+},
+{
+  type: "video",
+  id: "vid11",
+  name: "MLP FIM Season 1 Episode 1 - Friendship is Magic (Part 1)",
+  src: "https://www.youtube.com/embed/B6oUohZnKIc"
+},
+{
+  type: "video",
+  id: "vid12",
+  name: "31 Clothing Hacks Everyone NEEDS To Try || Fashion Tricks Everyone Must Know!",
+  src: "https://www.youtube.com/embed/ASGRB47_pxo"
+},
+{
+  type: "video",
+  id: "vid13",
+  name: "Game Theory: FNAF 6, No More Secrets",
+  src: "https://www.youtube.com/embed/s_dp2mBrqr0"
+},
+{
+  type: "video",
+  id: "vid14",
+  name: "Pigeon Conga 2 !",
+  src: "https://www.youtube.com/embed/Ut-fJCc0zS4"
+},
+{
+  type: "video",
+  id: "vid15",
+  name: "ＹＯＵ ＴＯＯＫ ＴＨＥ P E E P O",
+  src: "https://www.youtube.com/embed/jHb-kLa4ifo"
+},
+{
+  type: "video",
+  id: "vid16",
+  name: "Nightcore - Angel With A Shotgun",
+  src: "https://www.youtube.com/embed/cvaIgq5j2Q8"
+},
+{
+  type: "video",
+  id: "vid17",
+  name: "The Ice Cream Is Revealed As Ninja | The Masked Singer",
+  src: "https://www.youtube.com/embed/_dioP4Vn8E4"
+},
+{
+  type: "video",
+  id: "vid18",
+  name: "Minecraft: Parkour Racing - Gold & Diamond!",
+  src: "https://www.youtube.com/embed/NrbqhrLOwNA"
+},
+{
+  type: "video",
+  id: "vid19",
+  name: "Magic's Biggest Secrets Finally Revealed",
+  src: "https://www.youtube.com/embed/XDq08lk5GnQ"
+},
+{
+  type: "video",
+  id: "vid20",
+  name: "Walt Disney World Rides - 2022 POVs [4K POV]",
+  src: "https://www.youtube.com/embed/NNqRKx63kFI"
+},
+{
+  type: "video",
+  id: "vid21",
+  name: "roman sanders is amazing",
+  src: "https://www.youtube.com/embed/LjLP4KjFegY"
+},
+{
+  type: "video",
+  id: "vid22",
+  name: "Panic! At The Disco: Victorious [OFFICIAL VIDEO]",
+  src: "https://www.youtube.com/embed/AUChk0lxF44"
+},
+{
+  type: "video",
+  id: "vid23",
+  name: "J.G. Wentworth Commercial - Viking Opera",
+  src: "https://www.youtube.com/embed/pdPM6j1Q4sg"
+},
+{
+  type: "video",
+  id: "vid24",
+  name: "Bass Boosted Taco Bell Bell",
+  src: "https://www.youtube.com/embed/Wzkzric0c8Y"
+},
+{
+  type: "video",
+  id: "vid25",
+  name: "Coffee Mate Super Bowl 59 commercial",
+  src: "https://www.youtube.com/embed/u6-KwCtE1ko"
+},
+{
+  type: "video",
+  id: "vid26",
+  name: "10 Hours of Paint Drying",
+  src: "https://www.youtube.com/embed/PLOPygVcaVE"
+},
+{
+  type: "video",
+  id: "vid27",
+  name: "Fushigi Ball Commercial",
+  src: "https://www.youtube.com/embed/myIR__htBgc"
+},
+{
+  type: "video",
+  id: "vid28",
+  name: "Zoo Pals Commercial",
+  src: "https://www.youtube.com/embed/7OxIlXPY2Ps"
+},
+{
+  type: "video",
+  id: "vid29",
+  name: "【Undertale】Stronger Than You Response (ver. Frisk)",
+  src: "https://www.youtube.com/embed/OQ3z6oxNheo"
+},
+{
+  type: "video",
+  id: "vid30",
+  name: "Loser Like Me - Nightcore - Lyrics!!!",
+  src: "https://www.youtube.com/embed/nU_qTgKAHeY"
+},
+{
+  type: "video",
+  id: "vid31",
+  name: "PPG Servant of evil - NUS (English)",
+  src: "https://www.youtube.com/embed/oWZ6keZb174"
+},
+{
+  type: "video",
+  id: "vid32",
+  name: "Powerpunk girls and Rowdyrightboys ~ Calling all the monsters",
+  src: "https://www.youtube.com/embed/O4cd_Wo0-u8"
+},
+{
+  type: "video",
+  id: "vid33",
+  name: "That was a close call. They have a baby mustard.",
+  src: "https://www.youtube.com/embed/x4YA-74yhZo"
+},
+{
+  type: "video",
+  id: "vid34",
+  name: "Super Bowl 50 - Mountain Dew: Puppy Monkey Baby",
+  src: "https://www.youtube.com/embed/nQcfK9EKfL4"
+},
+{
+  type: "video",
+  id: "vid35",
+  name: "Harry Potter Puppet Pals",
+  src: "https://www.youtube.com/embed/F-I5GA2Jzyo"
+},
+{
+  type: "video",
+  id: "vid36",
+  name: "Disney Princess Royal Horse Show Full Playthrough",
+  src: "https://www.youtube.com/embed/PDgKjZDP81o"
+},
+{
+  type: "video",
+  id: "vid37",
+  name: "Lps~ The JFK assassination",
+  src: "https://www.youtube.com/embed/v2DxBsWk3w8"
+},
+{
+  type: "video",
+  id: "vid38",
+  name: "EZ CRACKER COMMERCIAL STARRING WENDY KAUFMAN",
+  src: "https://www.youtube.com/embed/PxZxYZdzpWk"
+},
+{
+  type: "video",
+  id: "vid39",
+  name: "MIRAAANDAAA - a monsterprom animatic",
+  src: "https://www.youtube.com/embed/S36YXIdBKzw"
+},
+{
+  type: "video",
+  id: "vid40",
+  name: "Todrick Hall - McDonalds Drive Thru Song",
+  src: "https://www.youtube.com/embed/DgaN2C_mfH8"
+},
+{
+  type: "video",
+  id: "vid41",
+  name: "it's benny worm",
+  src: "https://www.youtube.com/embed/wPpeO_GbKrc"
+},
+{
+  type: "video",
+  id: "vid42",
+  name: "Bears Dance to Sweet Dreams (Remastered)",
+  src: "https://www.youtube.com/embed/Zq9gy6MFrl4"
+},
+{
+  type: "video",
+  id: "vid43",
+  name: "Fish Mascot Eats Worker (Original)",
+  src: "https://www.youtube.com/embed/BSj3jj7DHH4"
+},
+{
+  type: "video",
+  id: "vid44",
+  name: "WELCOME TO THE PHANDOM || an original song :)",
+  src: "https://www.youtube.com/embed/hk3X-phgNq0"
+},
+{
+  type: "video",
+  id: "vid45",
+  name: "Curse of The Weggy Board",
+  src: "https://www.youtube.com/embed/15nNY7uofNw"
+},
+{
+  type: "video",
+  id: "vid46",
+  name: "rich goes to starbucks || BE MORE CHILL ANIMATIC",
+  src: "https://www.youtube.com/embed/czTScdDBRCg"
+},
+{
+  type: "video",
+  id: "vid47",
+  name: "Jesse Boy - J Pee I'm Not Gay (Music Video)",
+  src: "https://www.youtube.com/embed/CTIncDdEWHI"
+},
+{
+  type: "video",
+  id: "vid48",
+  name: "Google Translate Sings: \"Shape of You\" by Ed Sheeran",
+  src: "https://www.youtube.com/embed/Rte07sl3Vf4"
+},
+{
+  type: "video",
+  id: "vid49",
+  name: "MUUUSIC MAN! (MatPat Remix)",
+  src: "https://www.youtube.com/embed/3Rh6E_5WvxM"
+},
+{
+  type: "video",
+  id: "vid50",
+  name: "Mom found the yaoi",
+  src: "https://www.youtube.com/embed/9f95CwLVbck"
+},
+
+      // ⬆️ you can keep adding the rest exactly like this
+    ];
+
+    function rollGacha() {
+      if (!canRoll) return;
+      canRoll = false;
+
+      const btn = document.getElementById("rollBtn");
+      const machine = document.getElementById("machine");
+      const prizeBox = document.getElementById("prize");
+
+      btn.disabled = true;
+      prizeBox.innerHTML = "";
+
+      machine.textContent = "🟡";
+      machine.className = "shake";
+
+      setTimeout(() => {
+        machine.className = "crack";
+      }, 600);
+
+      setTimeout(() => {
+        machine.textContent = "✨";
+        machine.className = "";
+
+        const prize = prizes[Math.floor(Math.random() * prizes.length)];
+
+       prizeBox.innerHTML = `
+  <iframe
+    src="${prize.src}"
+    frameborder="0"
+    allowfullscreen>
+  </iframe>
+`;
+
+
+        collectedVideos[prize.id] = true;
+        renderCollection();
+        logPrize(`📼 Video unlocked: ${prize.name}`);
+
+        startCooldown();
+      }, 1400);
+    }
+
+    function renderCollection() {
+      const list = document.getElementById("collectionList");
+      list.innerHTML = "";
+
+      prizes.forEach(video => {
+        const li = document.createElement("li");
+        li.textContent = collectedVideos[video.id]
+          ? video.name
+          : "???";
+        list.appendChild(li);
+      });
+    }
+
+    function startCooldown() {
+      let timeLeft = COOLDOWN_TIME;
+      const cd = document.getElementById("cooldown");
+      const btn = document.getElementById("rollBtn");
+
+      cd.textContent = `⏳ Cooldown: ${timeLeft}s`;
+
+      const timer = setInterval(() => {
+        timeLeft--;
+        cd.textContent = `⏳ Cooldown: ${timeLeft}s`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          cd.textContent = "";
+          btn.disabled = false;
+          canRoll = true;
+        }
+      }, 1000);
+    }
+
+    function logPrize(text) {
+      const logList = document.getElementById("logList");
+      const item = document.createElement("li");
+      item.textContent = `${new Date().toLocaleTimeString()} — ${text}`;
+      logList.prepend(item);
+    }
+
+    document.getElementById("rollBtn").addEventListener("click", rollGacha);
+
+    renderCollection();
+  </script>
+
+</body>
+</html>
