@@ -88,18 +88,28 @@
   ul {
     list-style: none;
     padding: 0;
-    max-width: 500px;
+    max-width: 1200px;
     margin: 20px auto;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
   }
 
   li {
-    margin: 6px;
     cursor: pointer;
     opacity: 0.85;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.2s;
+    text-align: center;
+    font-size: 14px;
   }
 
   li:hover {
     opacity: 1;
+    background: rgba(255, 105, 180, 0.2);
+    transform: scale(1.05);
   }
 </style>
 </head>
