@@ -2,444 +2,534 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Gacha Collection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ Gacha Collection</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+  :root {
+    --pink: #ff6eb4;
+    --pink-light: #ffb3d9;
+    --pink-dark: #d4457e;
+    --lavender: #c084fc;
+    --mint: #67e8c0;
+    --cream: #fff5fb;
+    --bg-dark: #0f0a1a;
+    --bg-mid: #1a0f2e;
+    --card-bg: rgba(255, 255, 255, 0.06);
+    --card-border: rgba(255, 110, 180, 0.25);
+    --text-main: #fff0f8;
+    --text-muted: #c4a8c8;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
-    background: linear-gradient(180deg, #1a1a2e, #16213e);
-    color: white;
-    font-family: Arial, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* === ANIMATED BACKGROUND === */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 0%, rgba(192, 132, 252, 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 100%, rgba(255, 110, 180, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(103, 232, 192, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* === FLOATING SPARKLES === */
+  .sparkle-field {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--pink-light);
+    animation: float-sparkle linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes float-sparkle {
+    0%   { opacity: 0; transform: translateY(100vh) scale(0); }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.6; }
+    100% { opacity: 0; transform: translateY(-10vh) scale(1.5); }
+  }
+
+  /* === LAYOUT === */
+  .wrapper {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* === HEADER === */
+  .header {
     text-align: center;
-    padding: 20px;
+    margin-bottom: 48px;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(255,110,180,0.2), rgba(192,132,252,0.2));
+    border: 1px solid var(--card-border);
+    border-radius: 50px;
+    padding: 6px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--pink-light);
+    margin-bottom: 16px;
   }
 
   h1 {
-    font-size: 40px;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(52px, 8vw, 88px);
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 0%, var(--pink-light) 40%, var(--lavender) 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 40px rgba(255,110,180,0.4));
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* === MACHINE SECTION === */
+  .machine-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 28px;
+    padding: 40px 32px;
+    margin-bottom: 28px;
+    backdrop-filter: blur(12px);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .machine-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,110,180,0.04), rgba(192,132,252,0.04));
+    pointer-events: none;
+  }
+
+  .machine-glow {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,110,180,0.3), transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+
+  .machine-panel.glowing .machine-glow {
+    opacity: 1;
   }
 
   #machine {
-    font-size: 80px;
-    margin: 20px;
+    font-size: 90px;
+    display: inline-block;
+    transition: transform 0.1s;
+    filter: drop-shadow(0 8px 24px rgba(255,110,180,0.5));
+    margin-bottom: 28px;
+    cursor: default;
+    user-select: none;
   }
 
   .shake {
-    animation: shake 0.5s infinite;
+    animation: shake 0.08s infinite !important;
   }
 
   @keyframes shake {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(5deg); }
-    50% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
-    100% { transform: rotate(0deg); }
+    0%   { transform: rotate(-6deg) scale(1.05); }
+    50%  { transform: rotate(6deg) scale(1.1); }
+    100% { transform: rotate(-6deg) scale(1.05); }
   }
 
-  button {
-    padding: 15px 30px;
-    font-size: 18px;
-    border-radius: 14px;
+  #rollBtn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 52px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    letter-spacing: 1px;
+    border-radius: 100px;
     border: none;
     cursor: pointer;
-    background: #ff69b4;
+    background: linear-gradient(135deg, var(--pink) 0%, var(--lavender) 100%);
     color: white;
-  }
-
-  button:disabled {
-    opacity: 0.5;
-  }
-
-  #resultText {
-    font-size: 32px;
-    margin: 20px;
-    min-height: 40px;
-  }
-
-  #prizeBox iframe,
-  #prizeBox img {
-    width: 720px;
-    height: 405px;
-    margin-top: 20px;
-    border-radius: 18px;
-    border: none;
-    background: black;
-  }
-
-  #progressBar {
-    width: 80%;
-    height: 20px;
-    background: #333;
-    border-radius: 10px;
-    margin: 10px auto;
+    box-shadow:
+      0 0 0 0 rgba(255,110,180,0),
+      0 8px 32px rgba(255,110,180,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: all 0.2s ease;
     overflow: hidden;
+  }
+
+  #rollBtn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    border-radius: inherit;
+  }
+
+  #rollBtn:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+      0 0 0 6px rgba(255,110,180,0.12),
+      0 16px 48px rgba(255,110,180,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+
+  #rollBtn:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+
+  #rollBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* === RESULT TEXT === */
+  #resultText {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    margin-top: 20px;
+    min-height: 36px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+  }
+
+  .result-new {
+    color: var(--pink-light) !important;
+    animation: pulse-text 0.6s ease;
+  }
+
+  .result-dupe {
+    color: var(--text-muted) !important;
+  }
+
+  @keyframes pulse-text {
+    0%   { transform: scale(0.8); opacity: 0; }
+    60%  { transform: scale(1.08); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* === PROGRESS === */
+  .progress-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 22px 28px;
+    margin-bottom: 28px;
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .progress-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px;
+    white-space: nowrap;
+    color: var(--pink-light);
+    min-width: 130px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 14px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px solid rgba(255,110,180,0.15);
   }
 
   #progressFill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #ff69b4, #ffd1dc);
-    transition: width 0.4s ease;
+    background: linear-gradient(90deg, var(--pink), var(--lavender));
+    border-radius: 100px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 10px rgba(255,110,180,0.6);
   }
 
-  #progressText {
-    margin-bottom: 6px;
+  .progress-count {
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .progress-count span {
+    color: var(--text-main);
     font-size: 18px;
   }
 
-  ul {
+  /* === PRIZE BOX === */
+  #prizeBox {
+    margin-bottom: 28px;
+  }
+
+  #prizeBox:empty {
+    display: none;
+  }
+
+  #prizeBox iframe,
+  #prizeBox img {
+    width: 100%;
+    max-width: 720px;
+    height: 405px;
+    border-radius: 20px;
+    border: 2px solid var(--card-border);
+    background: #000;
+    box-shadow: 0 16px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,110,180,0.1);
+    display: block;
+    margin: 0 auto;
+    animation: prize-reveal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes prize-reveal {
+    from { transform: scale(0.88) translateY(12px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  /* === COLLECTION SECTION === */
+  .collection-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .collection-header h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 32px;
+    background: linear-gradient(135deg, #fff, var(--lavender));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .collection-divider {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--card-border), transparent);
+  }
+
+  /* === GRID === */
+  #collectionList {
     list-style: none;
     padding: 0;
-    max-width: 1200px;
-    margin: 20px auto;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
   }
 
-  li {
+  #collectionList li {
     cursor: pointer;
-    opacity: 0.85;
-    padding: 8px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    transition: all 0.2s;
+    padding: 12px 10px;
+    border-radius: 14px;
+    background: var(--card-bg);
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
     text-align: center;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
   }
 
-  li:hover {
-    opacity: 1;
-    background: rgba(255, 105, 180, 0.2);
-    transform: scale(1.05);
+  #collectionList li.collected {
+    border-color: rgba(255,110,180,0.2);
+    color: var(--pink-light);
   }
+
+  #collectionList li.collected:hover {
+    background: rgba(255,110,180,0.12);
+    border-color: rgba(255,110,180,0.5);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(255,110,180,0.2);
+    color: white;
+  }
+
+  #collectionList li.locked {
+    color: rgba(255,255,255,0.15);
+    cursor: default;
+    font-size: 20px;
+    letter-spacing: 3px;
+  }
+
+  #collectionList li.locked:hover {
+    background: var(--card-bg);
+    transform: none;
+    border-color: transparent;
+  }
+
+  /* === BURST ANIMATION === */
+  @keyframes burst {
+    0%   { transform: scale(1); }
+    30%  { transform: scale(1.15); background: rgba(255,110,180,0.25); }
+    100% { transform: scale(1); }
+  }
+
+  .just-unlocked {
+    animation: burst 0.5s ease forwards;
+    border-color: var(--pink) !important;
+    box-shadow: 0 0 20px rgba(255,110,180,0.5) !important;
+  }
+
+  /* === SCROLLBAR === */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-dark); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,110,180,0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,110,180,0.6); }
 </style>
 </head>
 
 <body>
 
-<h1>🎀 Gacha Collection</h1>
+<!-- Sparkle field -->
+<div class="sparkle-field" id="sparkleField"></div>
 
-<div id="machine">🎁</div>
-<button id="rollBtn">ROLL</button>
+<div class="wrapper">
 
-<div id="resultText"></div>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-badge">✦ Interactive ✦</div>
+    <h1>Gacha Collection</h1>
+    <p class="subtitle">Roll to discover treasures from the internet's finest corners ✨</p>
+  </div>
 
-<div id="progressText"></div>
-<div id="progressBar">
-  <div id="progressFill"></div>
+  <!-- MACHINE + ROLL -->
+  <div class="machine-panel" id="machinePanel">
+    <div class="machine-glow"></div>
+    <div id="machine">🎁</div>
+    <div>
+      <button id="rollBtn">🎀 ROLL</button>
+    </div>
+    <div id="resultText"></div>
+  </div>
+
+  <!-- PRIZE DISPLAY -->
+  <div id="prizeBox"></div>
+
+  <!-- PROGRESS -->
+  <div class="progress-section">
+    <div class="progress-label">📦 Collection</div>
+    <div class="progress-track">
+      <div id="progressFill"></div>
+    </div>
+    <div class="progress-count"><span id="progressCurrent">0</span> / <span id="progressTotal">0</span></div>
+  </div>
+
+  <!-- COLLECTION GRID -->
+  <div class="collection-header">
+    <h2>Your Collection</h2>
+    <div class="collection-divider"></div>
+  </div>
+  <ul id="collectionList"></ul>
+
 </div>
 
-<div id="prizeBox"></div>
-
-<h2>Your Collection</h2>
-<ul id="collectionList"></ul>
-
 <script>
-/* =========================
-   ADD YOUR PRIZES HERE
-   ========================= */
-
+/* ==============================
+   PRIZES — unchanged from original
+   ============================== */
 const prizes = [
-  // VIDEOS
-  {
-  type: "video",
-  id: "vid01",
-  name: "M&Ms Christmas Commercial: THEY DO EXIST!",
-  src: "https://www.youtube.com/embed/iE8CJwXSPRs"
-},
-{
-  type: "video",
-  id: "vid02",
-  name: "zendaya is meechee",
-  src: "https://www.youtube.com/embed/Xx5YqFKjTCY"
-},
-{
-  type: "video",
-  id: "vid03",
-  name: "Peanut Butter Jelly Time with Lyrics!!!",
-  src: "https://www.youtube.com/embed/eRBOgtp0Hac"
-},
-{
-  type: "video",
-  id: "vid04",
-  name: "Roman And Logan - Rap Battle",
-  src: "https://www.youtube.com/embed/lg7wTrLnk64"
-},
-{
-  type: "video",
-  id: "vid05",
-  name: "This Day Aria | FundyWasTaken (? Animatic",
-  src: "https://www.youtube.com/embed/ho2f6Szgmec"
-},
-{
-  type: "video",
-  id: "vid06",
-  name: "DreamSmp Rhapsody || DREAM SMP ANIMATIC ||",
-  src: "https://www.youtube.com/embed/YihXAWuG0hA"
-},
-{
-  type: "video",
-  id: "vid07",
-  name: "Gimme that Filet-O-Fish",
-  src: "https://www.youtube.com/embed/csrPT9ClVUc"
-},
-{
-  type: "video",
-  id: "vid08",
-  name: "Ferb - Backyard Beach (From \"Phineas and Ferb\"/Sing-Along)",
-  src: "https://www.youtube.com/embed/z62uOoYP1TE"
-},
-{
-  type: "video",
-  id: "vid09",
-  name: "Aaron Burr, Sir || Hamilton Animatic",
-  src: "https://www.youtube.com/embed/7Z6U9WaZXkY"
-},
-{
-  type: "video",
-  id: "vid10",
-  name: "Dramatic fart sound effect 😂",
-  src: "https://www.youtube.com/embed/ilfTfC0FQcc"
-},
-{
-  type: "video",
-  id: "vid11",
-  name: "MLP FIM Season 1 Episode 1 - Friendship is Magic (Part 1)",
-  src: "https://www.youtube.com/embed/B6oUohZnKIc"
-},
-{
-  type: "video",
-  id: "vid12",
-  name: "31 Clothing Hacks Everyone NEEDS To Try || Fashion Tricks Everyone Must Know!",
-  src: "https://www.youtube.com/embed/ASGRB47_pxo"
-},
-{
-  type: "video",
-  id: "vid13",
-  name: "Game Theory: FNAF 6, No More Secrets",
-  src: "https://www.youtube.com/embed/s_dp2mBrqr0"
-},
-{
-  type: "video",
-  id: "vid14",
-  name: "Pigeon Conga 2 !",
-  src: "https://www.youtube.com/embed/Ut-fJCc0zS4"
-},
-{
-  type: "video",
-  id: "vid15",
-  name: "ＹＯＵ ＴＯＯＫ ＴＨＥ P E E P O",
-  src: "https://www.youtube.com/embed/jHb-kLa4ifo"
-},
-{
-  type: "video",
-  id: "vid16",
-  name: "Nightcore - Angel With A Shotgun",
-  src: "https://www.youtube.com/embed/cvaIgq5j2Q8"
-},
-{
-  type: "video",
-  id: "vid17",
-  name: "The Ice Cream Is Revealed As Ninja | The Masked Singer",
-  src: "https://www.youtube.com/embed/_dioP4Vn8E4"
-},
-{
-  type: "video",
-  id: "vid18",
-  name: "Minecraft: Parkour Racing - Gold & Diamond!",
-  src: "https://www.youtube.com/embed/NrbqhrLOwNA"
-},
-{
-  type: "video",
-  id: "vid19",
-  name: "Magic's Biggest Secrets Finally Revealed",
-  src: "https://www.youtube.com/embed/XDq08lk5GnQ"
-},
-{
-  type: "video",
-  id: "vid20",
-  name: "Walt Disney World Rides - 2022 POVs [4K POV]",
-  src: "https://www.youtube.com/embed/NNqRKx63kFI"
-},
-{
-  type: "video",
-  id: "vid21",
-  name: "roman sanders is amazing",
-  src: "https://www.youtube.com/embed/LjLP4KjFegY"
-},
-{
-  type: "video",
-  id: "vid22",
-  name: "Panic! At The Disco: Victorious [OFFICIAL VIDEO]",
-  src: "https://www.youtube.com/embed/AUChk0lxF44"
-},
-{
-  type: "video",
-  id: "vid23",
-  name: "J.G. Wentworth Commercial - Viking Opera",
-  src: "https://www.youtube.com/embed/pdPM6j1Q4sg"
-},
-{
-  type: "video",
-  id: "vid24",
-  name: "Bass Boosted Taco Bell Bell",
-  src: "https://www.youtube.com/embed/Wzkzric0c8Y"
-},
-{
-  type: "video",
-  id: "vid25",
-  name: "Coffee Mate Super Bowl 59 commercial",
-  src: "https://www.youtube.com/embed/u6-KwCtE1ko"
-},
-{
-  type: "video",
-  id: "vid26",
-  name: "10 Hours of Paint Drying",
-  src: "https://www.youtube.com/embed/PLOPygVcaVE"
-},
-{
-  type: "video",
-  id: "vid27",
-  name: "Fushigi Ball Commercial",
-  src: "https://www.youtube.com/embed/myIR__htBgc"
-},
-{
-  type: "video",
-  id: "vid28",
-  name: "Zoo Pals Commercial",
-  src: "https://www.youtube.com/embed/7OxIlXPY2Ps"
-},
-{
-  type: "video",
-  id: "vid29",
-  name: "【Undertale】Stronger Than You Response (ver. Frisk)",
-  src: "https://www.youtube.com/embed/OQ3z6oxNheo"
-},
-{
-  type: "video",
-  id: "vid30",
-  name: "Loser Like Me - Nightcore - Lyrics!!!",
-  src: "https://www.youtube.com/embed/nU_qTgKAHeY"
-},
-{
-  type: "video",
-  id: "vid31",
-  name: "PPG Servant of evil - NUS (English)",
-  src: "https://www.youtube.com/embed/oWZ6keZb174"
-},
-{
-  type: "video",
-  id: "vid32",
-  name: "Powerpunk girls and Rowdyrightboys ~ Calling all the monsters",
-  src: "https://www.youtube.com/embed/O4cd_Wo0-u8"
-},
-{
-  type: "video",
-  id: "vid33",
-  name: "That was a close call. They have a baby mustard.",
-  src: "https://www.youtube.com/embed/x4YA-74yhZo"
-},
-{
-  type: "video",
-  id: "vid34",
-  name: "Super Bowl 50 - Mountain Dew: Puppy Monkey Baby",
-  src: "https://www.youtube.com/embed/nQcfK9EKfL4"
-},
-{
-  type: "video",
-  id: "vid35",
-  name: "Harry Potter Puppet Pals",
-  src: "https://www.youtube.com/embed/F-I5GA2Jzyo"
-},
-{
-  type: "video",
-  id: "vid36",
-  name: "Disney Princess Royal Horse Show Full Playthrough",
-  src: "https://www.youtube.com/embed/PDgKjZDP81o"
-},
-{
-  type: "video",
-  id: "vid37",
-  name: "Lps~ The JFK assassination",
-  src: "https://www.youtube.com/embed/v2DxBsWk3w8"
-},
-{
-  type: "video",
-  id: "vid38",
-  name: "EZ CRACKER COMMERCIAL STARRING WENDY KAUFMAN",
-  src: "https://www.youtube.com/embed/PxZxYZdzpWk"
-},
-{
-  type: "video",
-  id: "vid39",
-  name: "MIRAAANDAAA - a monsterprom animatic",
-  src: "https://www.youtube.com/embed/S36YXIdBKzw"
-},
-{
-  type: "video",
-  id: "vid40",
-  name: "Todrick Hall - McDonalds Drive Thru Song",
-  src: "https://www.youtube.com/embed/DgaN2C_mfH8"
-},
-{
-  type: "video",
-  id: "vid41",
-  name: "it's benny worm",
-  src: "https://www.youtube.com/embed/wPpeO_GbKrc"
-},
-{
-  type: "video",
-  id: "vid42",
-  name: "Bears Dance to Sweet Dreams (Remastered)",
-  src: "https://www.youtube.com/embed/Zq9gy6MFrl4"
-},
-{
-  type: "video",
-  id: "vid43",
-  name: "Fish Mascot Eats Worker (Original)",
-  src: "https://www.youtube.com/embed/BSj3jj7DHH4"
-},
-{
-  type: "video",
-  id: "vid44",
-  name: "WELCOME TO THE PHANDOM || an original song :)",
-  src: "https://www.youtube.com/embed/hk3X-phgNq0"
-},
-{
-  type: "video",
-  id: "vid45",
-  name: "Curse of The Weggy Board",
-  src: "https://www.youtube.com/embed/15nNY7uofNw"
-},
-{
-  type: "video",
-  id: "vid46",
-  name: "rich goes to starbucks || BE MORE CHILL ANIMATIC",
-  src: "https://www.youtube.com/embed/czTScdDBRCg"
-},
-{
-  type: "video",
-  id: "vid47",
-  name: "Jesse Boy - J Pee I'm Not Gay (Music Video)",
-  src: "https://www.youtube.com/embed/CTIncDdEWHI"
-},
-{
-  type: "video",
-  id: "vid48",
-  name: "Google Translate Sings: \"Shape of You\" by Ed Sheeran",
-  src: "https://www.youtube.com/embed/Rte07sl3Vf4"
-},
-{
-  type: "video",
-  id: "vid49",
-  name: "MUUUSIC MAN! (MatPat Remix)",
-  src: "https://www.youtube.com/embed/3Rh6E_5WvxM"
-},
-{
-  type: "video",
-  id: "vid50",
-  name: "Mom found the yaoi",
-  src: "https://www.youtube.com/embed/9f95CwLVbck"
-},
+  { type: "video", id: "vid01", name: "M&Ms Christmas Commercial: THEY DO EXIST!", src: "https://www.youtube.com/embed/iE8CJwXSPRs" },
+  { type: "video", id: "vid02", name: "zendaya is meechee", src: "https://www.youtube.com/embed/Xx5YqFKjTCY" },
+  { type: "video", id: "vid03", name: "Peanut Butter Jelly Time with Lyrics!!!", src: "https://www.youtube.com/embed/eRBOgtp0Hac" },
+  { type: "video", id: "vid04", name: "Roman And Logan - Rap Battle", src: "https://www.youtube.com/embed/lg7wTrLnk64" },
+  { type: "video", id: "vid05", name: "This Day Aria | FundyWasTaken (? Animatic", src: "https://www.youtube.com/embed/ho2f6Szgmec" },
+  { type: "video", id: "vid06", name: "DreamSmp Rhapsody || DREAM SMP ANIMATIC ||", src: "https://www.youtube.com/embed/YihXAWuG0hA" },
+  { type: "video", id: "vid07", name: "Gimme that Filet-O-Fish", src: "https://www.youtube.com/embed/csrPT9ClVUc" },
+  { type: "video", id: "vid08", name: "Ferb - Backyard Beach (From \"Phineas and Ferb\"/Sing-Along)", src: "https://www.youtube.com/embed/z62uOoYP1TE" },
+  { type: "video", id: "vid09", name: "Aaron Burr, Sir || Hamilton Animatic", src: "https://www.youtube.com/embed/7Z6U9WaZXkY" },
+  { type: "video", id: "vid10", name: "Dramatic fart sound effect 😂", src: "https://www.youtube.com/embed/ilfTfC0FQcc" },
+  { type: "video", id: "vid11", name: "MLP FIM Season 1 Episode 1 - Friendship is Magic (Part 1)", src: "https://www.youtube.com/embed/B6oUohZnKIc" },
+  { type: "video", id: "vid12", name: "31 Clothing Hacks Everyone NEEDS To Try || Fashion Tricks Everyone Must Know!", src: "https://www.youtube.com/embed/ASGRB47_pxo" },
+  { type: "video", id: "vid13", name: "Game Theory: FNAF 6, No More Secrets", src: "https://www.youtube.com/embed/s_dp2mBrqr0" },
+  { type: "video", id: "vid14", name: "Pigeon Conga 2 !", src: "https://www.youtube.com/embed/Ut-fJCc0zS4" },
+  { type: "video", id: "vid15", name: "ＹＯＵ ＴＯＯＫ ＴＨＥ P E E P O", src: "https://www.youtube.com/embed/jHb-kLa4ifo" },
+  { type: "video", id: "vid16", name: "Nightcore - Angel With A Shotgun", src: "https://www.youtube.com/embed/cvaIgq5j2Q8" },
+  { type: "video", id: "vid17", name: "The Ice Cream Is Revealed As Ninja | The Masked Singer", src: "https://www.youtube.com/embed/_dioP4Vn8E4" },
+  { type: "video", id: "vid18", name: "Minecraft: Parkour Racing - Gold & Diamond!", src: "https://www.youtube.com/embed/NrbqhrLOwNA" },
+  { type: "video", id: "vid19", name: "Magic's Biggest Secrets Finally Revealed", src: "https://www.youtube.com/embed/XDq08lk5GnQ" },
+  { type: "video", id: "vid20", name: "Walt Disney World Rides - 2022 POVs [4K POV]", src: "https://www.youtube.com/embed/NNqRKx63kFI" },
+  { type: "video", id: "vid21", name: "roman sanders is amazing", src: "https://www.youtube.com/embed/LjLP4KjFegY" },
+  { type: "video", id: "vid22", name: "Panic! At The Disco: Victorious [OFFICIAL VIDEO]", src: "https://www.youtube.com/embed/AUChk0lxF44" },
+  { type: "video", id: "vid23", name: "J.G. Wentworth Commercial - Viking Opera", src: "https://www.youtube.com/embed/pdPM6j1Q4sg" },
+  { type: "video", id: "vid24", name: "Bass Boosted Taco Bell Bell", src: "https://www.youtube.com/embed/Wzkzric0c8Y" },
+  { type: "video", id: "vid25", name: "Coffee Mate Super Bowl 59 commercial", src: "https://www.youtube.com/embed/u6-KwCtE1ko" },
+  { type: "video", id: "vid26", name: "10 Hours of Paint Drying", src: "https://www.youtube.com/embed/PLOPygVcaVE" },
+  { type: "video", id: "vid27", name: "Fushigi Ball Commercial", src: "https://www.youtube.com/embed/myIR__htBgc" },
+  { type: "video", id: "vid28", name: "Zoo Pals Commercial", src: "https://www.youtube.com/embed/7OxIlXPY2Ps" },
+  { type: "video", id: "vid29", name: "【Undertale】Stronger Than You Response (ver. Frisk)", src: "https://www.youtube.com/embed/OQ3z6oxNheo" },
+  { type: "video", id: "vid30", name: "Loser Like Me - Nightcore - Lyrics!!!", src: "https://www.youtube.com/embed/nU_qTgKAHeY" },
+  { type: "video", id: "vid31", name: "PPG Servant of evil - NUS (English)", src: "https://www.youtube.com/embed/oWZ6keZb174" },
+  { type: "video", id: "vid32", name: "Powerpunk girls and Rowdyrightboys ~ Calling all the monsters", src: "https://www.youtube.com/embed/O4cd_Wo0-u8" },
+  { type: "video", id: "vid33", name: "That was a close call. They have a baby mustard.", src: "https://www.youtube.com/embed/x4YA-74yhZo" },
+  { type: "video", id: "vid34", name: "Super Bowl 50 - Mountain Dew: Puppy Monkey Baby", src: "https://www.youtube.com/embed/nQcfK9EKfL4" },
+  { type: "video", id: "vid35", name: "Harry Potter Puppet Pals", src: "https://www.youtube.com/embed/F-I5GA2Jzyo" },
+  { type: "video", id: "vid36", name: "Disney Princess Royal Horse Show Full Playthrough", src: "https://www.youtube.com/embed/PDgKjZDP81o" },
+  { type: "video", id: "vid37", name: "Lps~ The JFK assassination", src: "https://www.youtube.com/embed/v2DxBsWk3w8" },
+  { type: "video", id: "vid38", name: "EZ CRACKER COMMERCIAL STARRING WENDY KAUFMAN", src: "https://www.youtube.com/embed/PxZxYZdzpWk" },
+  { type: "video", id: "vid39", name: "MIRAAANDAAA - a monsterprom animatic", src: "https://www.youtube.com/embed/S36YXIdBKzw" },
+  { type: "video", id: "vid40", name: "Todrick Hall - McDonalds Drive Thru Song", src: "https://www.youtube.com/embed/DgaN2C_mfH8" },
+  { type: "video", id: "vid41", name: "it's benny worm", src: "https://www.youtube.com/embed/wPpeO_GbKrc" },
+  { type: "video", id: "vid42", name: "Bears Dance to Sweet Dreams (Remastered)", src: "https://www.youtube.com/embed/Zq9gy6MFrl4" },
+  { type: "video", id: "vid43", name: "Fish Mascot Eats Worker (Original)", src: "https://www.youtube.com/embed/BSj3jj7DHH4" },
+  { type: "video", id: "vid44", name: "WELCOME TO THE PHANDOM || an original song :)", src: "https://www.youtube.com/embed/hk3X-phgNq0" },
+  { type: "video", id: "vid45", name: "Curse of The Weggy Board", src: "https://www.youtube.com/embed/15nNY7uofNw" },
+  { type: "video", id: "vid46", name: "rich goes to starbucks || BE MORE CHILL ANIMATIC", src: "https://www.youtube.com/embed/czTScdDBRCg" },
+  { type: "video", id: "vid47", name: "Jesse Boy - J Pee I'm Not Gay (Music Video)", src: "https://www.youtube.com/embed/CTIncDdEWHI" },
+  { type: "video", id: "vid48", name: "Google Translate Sings: \"Shape of You\" by Ed Sheeran", src: "https://www.youtube.com/embed/Rte07sl3Vf4" },
+  { type: "video", id: "vid49", name: "MUUUSIC MAN! (MatPat Remix)", src: "https://www.youtube.com/embed/3Rh6E_5WvxM" },
+  { type: "video", id: "vid50", name: "Mom found the yaoi", src: "https://www.youtube.com/embed/9f95CwLVbck" },
   { type: "video", id: "vid51", name: "Charlie bit my finger - again !", src: "https://www.youtube.com/embed/_OBlgSz8sSM" },
   { type: "video", id: "vid52", name: "Dramatic Look", src: "https://www.youtube.com/embed/y8Kyi0WNg40" },
   { type: "video", id: "vid53", name: "Skateboarding Dog", src: "https://www.youtube.com/embed/CQzUsTFqtW0" },
@@ -489,8 +579,6 @@ const prizes = [
   { type: "video", id: "vid97", name: "Hedgehog Plays Piano. Jazz Style!", src: "https://www.youtube.com/embed/NV4THp-bXo0" },
   { type: "video", id: "vid98", name: "PIZZA CHALLENGE", src: "https://www.youtube.com/embed/1cgbDMYsLDw" },
   { type: "video", id: "vid99", name: "froggy groove", src: "https://www.youtube.com/embed/e3JHzyDg1eQ" },
-
-  // IMAGES
   { type: "image", id: "img001", name: "Image 005eca5268cb3d57f06ddbda0bbf5fed", src: "https://i.pinimg.com/736x/00/5e/ca/005eca5268cb3d57f06ddbda0bbf5fed.jpg" },
   { type: "image", id: "img002", name: "Image 01a5ccd601069b3640b3ff7c4290d712", src: "https://i.pinimg.com/736x/01/a5/cc/01a5ccd601069b3640b3ff7c4290d712.jpg" },
   { type: "image", id: "img003", name: "Image 02ec79a8af4f687fa178146b1b0eeef8", src: "https://i.pinimg.com/736x/02/ec/79/02ec79a8af4f687fa178146b1b0eeef8.jpg" },
@@ -637,30 +725,49 @@ const prizes = [
   { type: "image", id: "img144", name: "Image fcf789a6f11726f6c3c5c5c0e3cddbcf", src: "https://i.pinimg.com/736x/fc/f7/89/fcf789a6f11726f6c3c5c5c0e3cddbcf.jpg" },
   { type: "image", id: "img145", name: "Image fec421a10a930665efdba60b1ba97e96", src: "https://i.pinimg.com/736x/fe/c4/21/fec421a10a930665efdba60b1ba97e96.jpg" },
   { type: "image", id: "img146", name: "Image ff2bdeb880027aa1c799eeb771dd6999", src: "https://i.pinimg.com/736x/ff/2b/de/ff2bdeb880027aa1c799eeb771dd6999.jpg" }
-
-  // ⬆️ COPY THESE BLOCKS TO ADD MORE
 ];
 
-/* ========================= */
+/* ==============================
+   SPARKLE GENERATOR
+   ============================== */
+const field = document.getElementById('sparkleField');
+const sparkleColors = ['#ffb3d9','#c084fc','#67e8c0','#fff0f8','#ffd4f0'];
+for (let i = 0; i < 30; i++) {
+  const s = document.createElement('div');
+  s.className = 'sparkle';
+  s.style.left = Math.random() * 100 + 'vw';
+  s.style.width = s.style.height = (2 + Math.random() * 4) + 'px';
+  s.style.background = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+  s.style.animationDuration = (8 + Math.random() * 14) + 's';
+  s.style.animationDelay = (Math.random() * 14) + 's';
+  field.appendChild(s);
+}
 
+/* ==============================
+   CORE LOGIC
+   ============================== */
 const collected = JSON.parse(localStorage.getItem("gachaCollection")) || {};
 
-const rollBtn = document.getElementById("rollBtn");
-const machine = document.getElementById("machine");
+const rollBtn  = document.getElementById("rollBtn");
+const machine  = document.getElementById("machine");
+const panel    = document.getElementById("machinePanel");
 const prizeBox = document.getElementById("prizeBox");
 const resultText = document.getElementById("resultText");
-const list = document.getElementById("collectionList");
 
 rollBtn.onclick = roll;
+document.getElementById('progressTotal').textContent = prizes.length;
 
 function roll() {
   rollBtn.disabled = true;
   machine.classList.add("shake");
+  panel.classList.add("glowing");
   resultText.textContent = "";
+  resultText.className = "";
   prizeBox.innerHTML = "";
 
   setTimeout(() => {
     machine.classList.remove("shake");
+    panel.classList.remove("glowing");
 
     const prize = prizes[Math.floor(Math.random() * prizes.length)];
     const isNew = !collected[prize.id];
@@ -671,10 +778,11 @@ function roll() {
       collected[prize.id] = true;
       localStorage.setItem("gachaCollection", JSON.stringify(collected));
       resultText.textContent = "✨ YOU GOT A NEW ONE!";
-      resultText.style.color = "#ff69b4";
+      resultText.className = "result-new";
+      highlightCollected(prize.id);
     } else {
       resultText.textContent = "🔁 DUPLICATE!";
-      resultText.style.color = "#aaa";
+      resultText.className = "result-dupe";
     }
 
     renderCollection();
@@ -684,49 +792,50 @@ function roll() {
 
 function showPrize(prize) {
   if (prize.type === "video") {
-    prizeBox.innerHTML = `
-      <iframe src="${prize.src}" allowfullscreen></iframe>
-    `;
+    prizeBox.innerHTML = `<iframe src="${prize.src}" allowfullscreen></iframe>`;
   } else {
-    prizeBox.innerHTML = `
-      <img src="${prize.src}" alt="${prize.name}">
-    `;
+    prizeBox.innerHTML = `<img src="${prize.src}" alt="${prize.name}">`;
   }
 }
 
+function highlightCollected(id) {
+  setTimeout(() => {
+    const el = document.querySelector(`[data-id="${id}"]`);
+    if (el) {
+      el.classList.add('just-unlocked');
+      setTimeout(() => el.classList.remove('just-unlocked'), 600);
+    }
+  }, 200);
+}
+
 function renderCollection() {
+  const list = document.getElementById("collectionList");
   list.innerHTML = "";
 
   prizes.forEach(p => {
     const li = document.createElement("li");
+    li.setAttribute('data-id', p.id);
 
     if (collected[p.id]) {
       li.textContent = p.name;
-      li.style.color = "#ffb6c1";
+      li.className = "collected";
       li.onclick = () => {
         showPrize(p);
         resultText.textContent = "📦 From your collection";
-        resultText.style.color = "#7fffd4";
+        resultText.className = "";
+        resultText.style.color = "var(--mint)";
       };
     } else {
-      li.textContent = "???";
+      li.textContent = "✦ ? ? ?";
+      li.className = "locked";
     }
 
     list.appendChild(li);
   });
 
-  updateProgress();
-}
-
-function updateProgress() {
   const count = Object.keys(collected).length;
-  const total = prizes.length;
-  const percent = (count / total) * 100;
-
-  document.getElementById("progressText").textContent =
-    `${count} / ${total} collected`;
-
-  document.getElementById("progressFill").style.width = `${percent}%`;
+  document.getElementById('progressCurrent').textContent = count;
+  document.getElementById('progressFill').style.width = (count / prizes.length * 100) + '%';
 }
 
 renderCollection();
